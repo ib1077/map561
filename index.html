@@ -12,7 +12,19 @@
   <link rel="stylesheet" href="styles.css">
   <title>智頭線 路線図ビューア</title>
 </head>
-<body>
+<body class="launch-waiting">
+  <section id="launchScreen" class="launch-screen" aria-labelledby="launchTitle">
+    <div class="launch-card">
+      <header><span class="launch-mark" aria-hidden="true"></span><div><h1 id="launchTitle">智頭線 路線図</h1><p>Ver.13.9C</p></div></header>
+      <div class="launch-choices">
+        <button data-launch-mode="route"><strong>路線図のみ</strong><span>勾配・構造物を表示</span></button>
+        <div class="launch-speed-choice"><button data-launch-mode="speed"><strong>路線図＋速度</strong><span>選択した列車の速度を重ねる</span></button><select id="launchTrain" aria-label="速度を表示する列車"><option value="7000">7000</option><option value="187">187</option><option value="3500">普通3500</option></select></div>
+        <button data-launch-mode="list"><strong>構造物一覧画面</strong><span>距離順の表から探す</span></button>
+      </div>
+      <div class="launch-help"><p><b>指1本</b>：スクロール　 <b>指2本</b>：拡大・縮小</p><p>構造物をタップ：一覧画面へ</p><p><b>🔄</b>：縦／横　 <b>☰</b>：MENU画面へ</p></div>
+      <p id="launchStatus" class="launch-status">画面を選ぶと横向きに整えてから開きます</p>
+    </div>
+  </section>
   <div class="app-shell">
     <header class="topbar">
       <div class="brand"><span class="brand-mark" aria-hidden="true"></span><strong>智頭線</strong><span id="modeTitle">路線図</span></div>

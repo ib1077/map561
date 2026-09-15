@@ -255,6 +255,33 @@
   function toast(message){const el=$("#toast");el.textContent=message;el.classList.add("show");clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.remove("show"),2200);}
   async function toggleOrientation(){const landscape=state.fallbackLandscape||matchMedia("(orientation: landscape)").matches,target=landscape?"portrait":"landscape";state.centerKm=center();if(target==="portrait"&&state.fallbackLandscape){document.body.classList.remove("fallback-landscape");state.fallbackLandscape=false;state.orientationLocked=false;toast("縦画面にしました");setTimeout(()=>setZoom(state.zoom,state.centerKm),120);return;}try{if(!document.fullscreenElement&&document.documentElement.requestFullscreen)await document.documentElement.requestFullscreen();if(!screen.orientation?.lock)throw new Error("unsupported");await screen.orientation.lock(target);state.orientationLocked=true;toast(target==="landscape"?"横画面にしました":"縦画面にしました");setTimeout(()=>setZoom(state.zoom,state.centerKm),120);}catch(_){if(target==="landscape"&&matchMedia("(pointer: coarse)").matches){document.body.classList.add("fallback-landscape");state.fallbackLandscape=true;toast("横画面表示にしました");setTimeout(()=>setZoom(state.zoom,state.centerKm),120);}else{try{screen.orientation?.unlock();if(document.fullscreenElement)await document.exitFullscreen();}catch(_){}state.orientationLocked=false;toast(target==="portrait"?"縦画面へ戻しました":"端末を横向きにしてください");}}}
 
+  const waitForLayout = ms => new Promise(resolve=>setTimeout(resolve,ms));
+  async function prepareLandscapeForLaunch(){
+    if(matchMedia("(orientation: landscape)").matches)return;
+    try{
+      if(!screen.orientation?.lock)throw new Error("unsupported");
+      try{await screen.orientation.lock("landscape");}
+      catch(firstError){if(!document.fullscreenElement&&document.documentElement.requestFullscreen)await document.documentElement.requestFullscreen();await screen.orientation.lock("landscape");}
+      state.orientationLocked=true;
+    }catch(_){
+      if(matchMedia("(pointer: coarse)").matches){document.body.classList.add("fallback-landscape");state.fallbackLandscape=true;}
+    }
+    await waitForLayout(260);
+  }
+  async function launchApp(mode){
+    const screenEl=$("#launchScreen"),status=$("#launchStatus");
+    if(screenEl.classList.contains("turning"))return;
+    screenEl.classList.add("turning");status.textContent="横画面を準備しています…";
+    $$('[data-launch-mode]').forEach(button=>button.disabled=true);
+    if(mode==="speed")selectTrain($("#launchTrain").value);
+    await prepareLandscapeForLaunch();
+    setMode(mode);
+    await waitForLayout(100);
+    if(mode!=="list"){const km=state.centerKm;renderRoute();renderSpeed();requestAnimationFrame(()=>{scrollCenter(km,true);restoreRouteY();});}
+    document.body.classList.remove("launch-waiting");screenEl.classList.add("closed");
+    setTimeout(()=>screenEl.classList.add("hidden"),220);
+  }
+
   function gestures(v){
     const pointers=new Map();let gesture=null;
     const values=()=>[...pointers.values()];
@@ -268,7 +295,8 @@
     v.addEventListener("wheel",e=>{if(!e.ctrlKey)return;e.preventDefault();setZoom(state.zoom*(e.deltaY>0?.88:1.14),center());},{passive:false});
   }
 
-  setAssetStripOpen(state.assetStripOpen,false);buildSettings();
+  setAssetStripOpen(state.assetStripOpen,false);buildSettings();$("#launchTrain").value=state.selectedTrain;
+  $$('[data-launch-mode]').forEach(button=>button.addEventListener("click",()=>launchApp(button.dataset.launchMode)));
   $("#menuBtn").addEventListener("click",()=>openSettings(true));$("#menuClose").addEventListener("click",()=>openSettings(false));$("#scrim").addEventListener("click",()=>openSettings(false));
   $("#resetLayers").addEventListener("click",()=>{state.layers=Object.fromEntries(layerInfo.map(([key])=>[key,"auto"]));buildSettings();renderRoute();save();toast("すべて自動に戻しました");});
   $("#printSettingsBtn").addEventListener("click",()=>openPrintDialog(true));$("#printDialogClose").addEventListener("click",()=>openPrintDialog(false));$("#printScrim").addEventListener("click",()=>openPrintDialog(false));
