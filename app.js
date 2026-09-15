@@ -253,11 +253,17 @@
   function openSettings(open){$("#settings").classList.toggle("open",open);$("#settings").setAttribute("aria-hidden",String(!open));$("#scrim").classList.toggle("hidden",!open);}
   function setMode(mode,requestedKm=null){const previous=state.mode,old=requestedKm===null?(state.zoom?center():state.centerKm):requestedKm;state.mode=mode;$$('.mode-tab').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));document.body.classList.toggle("list-mode",mode==="list");$("#routeWorkspace").classList.toggle("hidden",mode==="list");$("#speedWorkspace").classList.add("hidden");$("#assetWorkspace").classList.toggle("hidden",mode!=="list");$("#speedOverlayTools").classList.toggle("hidden",mode!=="speed");$("#modeTitle").textContent=mode==="route"?"路線図":mode==="speed"?"路線＋速度":"設備一覧";if(mode==="list"){setTimePanel(false);if(!selectedAsset()&&ASSETS.length)selectAsset(nearestAsset(old).id);updateAssetSelection(true);}else{closeInfo();requestAnimationFrame(()=>{renderRoute();scrollCenter(old,true);restoreRouteY();});}const target=mode==="list"?$("#assetWorkspace"):$("#routeWorkspace");target.classList.remove("mode-enter-up","mode-enter-down");void target.offsetWidth;target.classList.add(previous==="list"?"mode-enter-down":"mode-enter-up");setTimeout(()=>target.classList.remove("mode-enter-up","mode-enter-down"),240);save();}
   function toast(message){const el=$("#toast");el.textContent=message;el.classList.add("show");clearTimeout(toast.timer);toast.timer=setTimeout(()=>el.classList.remove("show"),2200);}
-  async function toggleOrientation(){const landscape=state.fallbackLandscape||matchMedia("(orientation: landscape)").matches,target=landscape?"portrait":"landscape";state.centerKm=center();if(target==="portrait"&&state.fallbackLandscape){document.body.classList.remove("fallback-landscape");state.fallbackLandscape=false;state.orientationLocked=false;toast("縦画面にしました");setTimeout(()=>setZoom(state.zoom,state.centerKm),120);return;}try{if(!document.fullscreenElement&&document.documentElement.requestFullscreen)await document.documentElement.requestFullscreen();if(!screen.orientation?.lock)throw new Error("unsupported");await screen.orientation.lock(target);state.orientationLocked=true;toast(target==="landscape"?"横画面にしました":"縦画面にしました");setTimeout(()=>setZoom(state.zoom,state.centerKm),120);}catch(_){if(target==="landscape"&&matchMedia("(pointer: coarse)").matches){document.body.classList.add("fallback-landscape");state.fallbackLandscape=true;toast("横画面表示にしました");setTimeout(()=>setZoom(state.zoom,state.centerKm),120);}else{try{screen.orientation?.unlock();if(document.fullscreenElement)await document.exitFullscreen();}catch(_){}state.orientationLocked=false;toast(target==="portrait"?"縦画面へ戻しました":"端末を横向きにしてください");}}}
+  async function toggleOrientation(){const landscape=state.fallbackLandscape||matchMedia("(orientation: landscape)").matches,target=landscape?"portrait":"landscape";state.centerKm=center();if(target==="portrait"&&state.fallbackLandscape){document.body.classList.remove("fallback-landscape");state.fallbackLandscape=false;state.orientationLocked=false;toast("縦画面にしました");setTimeout(()=>setZoom(state.zoom,state.centerKm),120);return;}if(target==="landscape"&&matchMedia("(pointer: coarse)").matches){document.body.classList.add("fallback-landscape");state.fallbackLandscape=true;state.orientationLocked=false;toast("横画面にしました");setTimeout(()=>setZoom(state.zoom,state.centerKm),120);return;}try{if(!document.fullscreenElement&&document.documentElement.requestFullscreen)await document.documentElement.requestFullscreen();if(!screen.orientation?.lock)throw new Error("unsupported");await screen.orientation.lock(target);state.orientationLocked=true;toast(target==="landscape"?"横画面にしました":"縦画面にしました");setTimeout(()=>setZoom(state.zoom,state.centerKm),120);}catch(_){try{screen.orientation?.unlock();if(document.fullscreenElement)await document.exitFullscreen();}catch(_){}state.orientationLocked=false;toast(target==="portrait"?"縦画面へ戻しました":"端末を横向きにしてください");}}
 
   const waitForLayout = ms => new Promise(resolve=>setTimeout(resolve,ms));
   async function prepareLandscapeForLaunch(){
     if(matchMedia("(orientation: landscape)").matches)return;
+    if(matchMedia("(pointer: coarse)").matches){
+      document.body.classList.add("fallback-landscape");
+      state.fallbackLandscape=true;
+      await waitForLayout(60);
+      return;
+    }
     try{
       if(!screen.orientation?.lock)throw new Error("unsupported");
       try{await screen.orientation.lock("landscape");}
@@ -271,7 +277,7 @@
   async function launchApp(mode){
     const screenEl=$("#launchScreen"),status=$("#launchStatus");
     if(screenEl.classList.contains("turning"))return;
-    screenEl.classList.add("turning");status.textContent="横画面を準備しています…";
+    screenEl.classList.add("turning");status.textContent="画面を開いています…";
     $$('[data-launch-mode]').forEach(button=>button.disabled=true);
     if(mode==="speed")selectTrain($("#launchTrain").value);
     await prepareLandscapeForLaunch();
