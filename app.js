@@ -80,15 +80,39 @@
   function visible(layer){const value=state.layers[layer]||"auto";return value==="show"||(value==="auto"&&autoVisible(layer));}
   function attrs(type,name,km,detail="",relation=""){return `class="clickable" tabindex="0" role="button" data-type="${escapeHtml(type)}" data-name="${escapeHtml(name)}" data-km="${km}" data-detail="${escapeHtml(detail)}" data-relation="${escapeHtml(relation)}"`;}
 
+  function buildNavigatorMarks(){
+    $("#navigatorKmMarks").innerHTML=[0,10,20,30,40,50,TOTAL].map(km=>`<span style="left:${km/TOTAL*100}%">${km}${km===TOTAL?"km":""}</span>`).join("");
+    $("#navigatorStationMarks").innerHTML=D.stations.map(s=>`<span style="left:${s.km/TOTAL*100}%">${escapeHtml(s.name.slice(0,1))}</span>`).join("");
+  }
+  function renderDistanceRuler(){
+    const ruler=$("#distanceRuler"),width=routeViewport.clientWidth;
+    if(!width)return;
+    const left=routeViewport.scrollLeft,zoom=state.zoom,height=24;
+    ruler.setAttribute("viewBox",`0 0 ${width} ${height}`);
+    ruler.style.width=`${width}px`;
+    const step=zoom<16?50:zoom<55?10:1;
+    const start=Math.max(0,Math.ceil((left-PAD)/zoom*10/step)*step);
+    const end=Math.min(Math.floor(TOTAL*10),Math.ceil((left+width-PAD)/zoom*10));
+    let out="";
+    for(let tenth=start;tenth<=end;tenth+=step){
+      const km=tenth/10,xx=PAD+km*zoom-left,whole=tenth%10===0,half=tenth%10===5;
+      out+=`<line x1="${xx}" x2="${xx}" y1="0" y2="${whole?7:half?5:3}" stroke="${whole?'#aaa7a0':'#dedcd6'}"/>`;
+      if((whole||half)&&xx>=0&&xx+25<width){const label=whole?`${km}k`:"1/2";out+=`<text x="${xx+3}" y="19" fill="#6b716e" font-size="10" font-family="sans-serif">${label}</text>`;}
+    }
+    ruler.innerHTML=out;
+  }
+  buildNavigatorMarks();
+
   function stripLane(){return 1;}
   function stripVisible(row){if(row.category==="信号機")return visible("signals");if(row.category.includes("地上子"))return visible("balises");return false;}
   function stripLabel(row){if(row.category==="信号機")return assetText(row.supplementalB||row.attribute);if(row.category.includes("地上子"))return assetText(row.supplementalB||row.type3||row.type2);return assetText(row.categoryName||row.attribute);}
   function stripLabelVisible(row){return row.category==="信号機"?state.zoom>=68:state.zoom>=105;}
   function renderAssetStrip(){
+    renderDistanceRuler();
     if(!lowerPanelVisible()){stripHits=[];return;}
-    const width=Math.max(1,assetStrip.clientWidth),height=Math.max(1,assetStrip.clientHeight),ratio=Math.min(2,window.devicePixelRatio||1),ctx=assetStripCanvas.getContext("2d"),curveH=height*.4,equipmentH=height-curveH,curveY=curveH/2,equipmentY=curveH+equipmentH/2;
+    const width=Math.max(1,assetStrip.clientWidth),height=Math.max(1,assetStripCanvas.clientHeight),ratio=Math.min(2,window.devicePixelRatio||1),ctx=assetStripCanvas.getContext("2d"),curveH=height*.4,equipmentH=height-curveH,curveY=curveH/2,equipmentY=curveH+equipmentH/2;
     if(assetStripCanvas.width!==Math.round(width*ratio)||assetStripCanvas.height!==Math.round(height*ratio)){assetStripCanvas.width=Math.round(width*ratio);assetStripCanvas.height=Math.round(height*ratio);}
-    ctx.setTransform(ratio,0,0,ratio,0,0);ctx.clearRect(0,0,width,height);ctx.fillStyle="#fcfcfa";ctx.fillRect(0,0,width,height);ctx.strokeStyle="#dedcd6";ctx.lineWidth=1;for(const yy of [0,curveH,height]){ctx.beginPath();ctx.moveTo(0,yy+.5);ctx.lineTo(width,yy+.5);ctx.stroke();}
+    ctx.setTransform(ratio,0,0,ratio,0,0);ctx.clearRect(0,0,width,height);ctx.fillStyle="#fcfcfa";ctx.fillRect(0,0,width,height);ctx.strokeStyle="#dedcd6";ctx.lineWidth=1;for(const yy of [curveH]){ctx.beginPath();ctx.moveTo(0,yy+.5);ctx.lineTo(width,yy+.5);ctx.stroke();}
     const sx=km=>PAD+km*state.zoom-routeViewport.scrollLeft,left=(routeViewport.scrollLeft-PAD)/state.zoom-1,right=(routeViewport.scrollLeft+width-PAD)/state.zoom+1;stripHits=[];
     if(visible("curves"))for(const curve of curveSpans){if(curve.end<left||curve.start>right)continue;const x1=sx(curve.start),x2=sx(curve.end),yy=curveY+3;ctx.strokeStyle="#b17824";ctx.lineWidth=1.8;ctx.lineCap="butt";ctx.beginPath();ctx.moveTo(x1,yy-7);ctx.lineTo(x1,yy);ctx.lineTo(x2,yy);ctx.lineTo(x2,yy-7);ctx.stroke();if(curve.radius&&state.zoom>=38){const label=`R${curve.radius}`;ctx.fillStyle="#8b5b16";ctx.font="700 10px sans-serif";ctx.fillText(label,(x1+x2)/2-ctx.measureText(label).width/2,yy-3);}stripHits.push({kind:"span",x1,x2,y:yy,km:curve.start,type:"曲線",name:curve.radius?`R${curve.radius}`:"曲線区間",detail:`${assetKmText(curve.start)} — ${assetKmText(curve.end)}`,relation:`延長 ${Math.round((curve.end-curve.start)*1000)}m`});}
     if(visible("tunnels"))for(const tunnel of D.tunnels){if(tunnel.end<left||tunnel.start>right)continue;const x1=sx(tunnel.start),x2=sx(tunnel.end);ctx.strokeStyle="#343b3d";ctx.lineWidth=6;ctx.lineCap="round";ctx.beginPath();ctx.moveTo(x1,equipmentY);ctx.lineTo(Math.max(x1+2,x2),equipmentY);ctx.stroke();if(state.zoom>=55){ctx.fillStyle="#343b3d";ctx.font="700 9px sans-serif";ctx.fillText(tunnel.name,(x1+x2)/2+4,equipmentY-8);}stripHits.push({kind:"span",x1,x2:Math.max(x1+2,x2),y:equipmentY,km:tunnel.start,type:"トンネル",name:structureName(tunnel),detail:`${assetKmText(tunnel.start)} — ${assetKmText(tunnel.end)}`,relation:`延長 ${Math.round((tunnel.end-tunnel.start)*1000)}m`});}

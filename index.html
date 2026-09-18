@@ -15,7 +15,7 @@
 <body class="launch-waiting">
   <section id="launchScreen" class="launch-screen" aria-labelledby="launchTitle">
     <div class="launch-card">
-      <header><span class="launch-mark" aria-hidden="true"></span><div><h1 id="launchTitle">智頭線 路線図</h1><p>Ver.13.9H</p></div></header>
+      <header><span class="launch-mark" aria-hidden="true"></span><div><h1 id="launchTitle">智頭線 路線図</h1><p>Ver.13.9I</p></div></header>
       <div class="launch-choices">
         <button data-launch-mode="route"><strong>路線図のみ</strong><span>勾配・構造物を表示</span></button>
         <div class="launch-speed-choice"><button data-launch-mode="speed"><strong>路線図＋速度</strong><span>選択した列車の速度を重ねる</span></button><select id="launchTrain" aria-label="速度を表示する列車"><option value="7000">7000</option><option value="187">187</option><option value="3500">普通3500</option></select></div>
@@ -26,6 +26,11 @@
     </div>
   </section>
   <div class="app-shell">
+      <section class="route-navigator" aria-label="全線の表示位置">
+        <div class="navigator-guide" aria-hidden="true"><div id="navigatorKmMarks"></div><div id="navigatorStationMarks"></div></div>
+        <input id="positionSlider" type="range" min="0" max="56.1" step="0.01" value="28.05" aria-label="表示する距離">
+        <output id="positionOutput" for="positionSlider">28k050m</output>
+      </section>
     <header class="topbar">
       <div class="brand"><span class="brand-mark" aria-hidden="true"></span><strong>智頭線</strong><span id="modeTitle">路線図</span></div>
       <nav class="mode-tabs" aria-label="表示モード">
@@ -51,6 +56,7 @@
           <canvas id="assetStripCanvas"></canvas>
           <div class="asset-strip-lanes" aria-hidden="true"><span>曲線</span><span>設備</span></div>
         </div>
+        <svg id="distanceRuler" class="distance-ruler" aria-hidden="true"></svg>
         <div id="speedOverlayTools" class="speed-overlay-tools hidden" aria-label="速度カーブ選択">
           <select id="trainSelect" aria-label="速度を表示する列車"><option value="7000">7000</option><option value="187">187</option><option value="3500">3500</option></select>
           <label class="line-toggle up"><input type="checkbox" data-speed="up" checked><span>上り</span></label>
@@ -94,11 +100,7 @@
         </div>
       </section>
 
-      <section class="route-navigator" aria-label="全線の表示位置">
-        <span class="navigator-end">0k</span>
-        <input id="positionSlider" type="range" min="0" max="56.1" step="0.01" value="28.05" aria-label="表示する距離">
-        <output id="positionOutput" for="positionSlider">28k050m</output>
-      </section>
+
 
       <section class="bottom-dock" aria-label="表示パネル">
         <section id="infoBar" class="info-bar" aria-live="polite" aria-hidden="true">
