@@ -16,7 +16,7 @@
 <body class="launch-waiting">
   <section id="launchScreen" class="launch-screen" aria-labelledby="launchTitle">
     <div class="launch-card">
-      <header><span class="launch-mark" aria-hidden="true"></span><div><h1 id="launchTitle">智頭線 路線図</h1><p>Ver.13.9L</p></div></header>
+      <header><span class="launch-mark" aria-hidden="true"></span><div><h1 id="launchTitle">智頭線 路線図</h1><p>Ver.13.9T</p></div></header>
       <div class="launch-choices">
         <button data-launch-mode="route"><strong>路線図のみ</strong><span>勾配・構造物を表示</span></button>
         <div class="launch-speed-choice"><button data-launch-mode="speed"><strong>路線図＋速度</strong><span>選択した列車の速度を重ねる</span></button><select id="launchTrain" aria-label="速度を表示する列車"><option value="7000">7000</option><option value="187">187</option><option value="3500">普通3500</option></select></div>
@@ -29,15 +29,13 @@
   <div class="app-shell">
     <header class="topbar">
       <div class="brand"><span class="brand-mark" aria-hidden="true"></span><strong>智頭線</strong><span id="modeTitle">路線図</span></div>
-      <nav class="mode-tabs" aria-label="表示モード">
-        <button class="mode-tab active" data-mode="route">路線</button>
-        <button class="mode-tab" data-mode="speed">＋速度</button>
-        <button class="mode-tab" data-mode="list">一覧</button>
+      <nav class="side-controls" aria-label="表示と操作">
+        <button id="navigatorBtn" class="side-button side-move" aria-label="距離移動バーを開く" title="距離移動" aria-expanded="false"><span class="side-icon" aria-hidden="true">⇔</span><span>移動</span></button>
+        <button class="side-button mode-tab active" data-mode="route"><span class="side-icon" aria-hidden="true">＃</span><span>路線</span></button>
+        <button class="side-button mode-tab" data-mode="speed"><span class="side-icon" aria-hidden="true">📉</span><span>速度</span></button>
+        <button id="timeSideBtn" class="side-button" aria-label="時間計算を開く" aria-expanded="false"><span class="side-icon" aria-hidden="true">◷</span><span>時間</span></button>
+        <button id="menuBtn" class="side-button side-settings" aria-label="表示設定を開く" title="設定"><span class="side-icon" aria-hidden="true">☰</span><span>設定</span></button>
       </nav>
-      <div class="top-actions">
-        <button id="orientationBtn" class="icon-button" aria-label="縦画面と横画面を切り替える" title="縦↔横切替">🔄</button>
-        <button id="menuBtn" class="icon-button" aria-label="表示設定を開く" title="表示設定">☰</button>
-      </div>
     </header>
 
     <main class="main-stage">
@@ -61,8 +59,7 @@
         <div id="speedOverlayTools" class="speed-overlay-tools hidden" aria-label="速度カーブ選択">
           <select id="trainSelect" aria-label="速度を表示する列車"><option value="7000">7000</option><option value="187">187</option><option value="3500">3500</option></select>
           <label class="line-toggle up"><input type="checkbox" data-speed="up" checked><span>上り</span></label>
-          <label class="line-toggle down"><input type="checkbox" data-speed="down"><span>下り</span></label>
-          <small>0–150 km/h</small>
+          <label class="line-toggle down"><input type="checkbox" data-speed="down"><span>下り</span></label><small>0–150 km/h</small>
         </div>
         <div class="zoom-buttons" aria-label="拡大縮小">
           <button id="zoomInBtn" aria-label="拡大">＋</button>
@@ -100,6 +97,7 @@
           <button id="showOnRouteBtn">路線図へ ↓</button>
         </div>
       </section>
+
 
       <section class="bottom-dock" aria-label="表示パネル">
         <section id="infoBar" class="info-bar" aria-live="polite" aria-hidden="true">
@@ -150,6 +148,7 @@
     <div class="settings-layer">
     <aside id="settings" class="settings" aria-label="表示設定" aria-hidden="true">
       <div class="settings-head"><div><strong>表示設定</strong><span>駅・トンネル・勾配は常に表示</span></div><button id="menuClose" class="icon-button dark" aria-label="設定を閉じる">×</button></div>
+      <button id="listModeBtn" class="settings-list-button"><span>▤</span><strong>構造物・設備一覧</strong><small>距離順・種別順で確認</small></button>
       <div id="layerSettings" class="layer-settings"></div>
       <button id="resetLayers" class="reset-button">すべて自動に戻す</button>
       <button id="printSettingsBtn" class="print-open-button"><span>▣</span><strong>印刷・PDF</strong><small>A4縦6段／A4横1段</small></button>
@@ -163,6 +162,7 @@
   <button id="printScrim" class="print-scrim hidden" aria-label="印刷設定を閉じる"></button>
   <section id="printDialog" class="print-dialog" role="dialog" aria-modal="true" aria-labelledby="printDialogTitle" aria-hidden="true">
     <div class="print-dialog-head"><div><strong id="printDialogTitle">印刷・PDF</strong><span>紙に合わせて路線図を整列します</span></div><button id="printDialogClose" class="icon-button dark" aria-label="印刷設定を閉じる">×</button></div>
+    <div class="print-view-choice" role="group" aria-label="印刷する図"><button class="active" data-print-view="gradient" aria-pressed="true">横から：勾配図</button><button data-print-view="plan" aria-pressed="false">上から：位置図</button></div>
     <div class="print-layouts" aria-label="印刷形式">
       <button class="print-layout active" data-print-layout="full"><span class="page-shape portrait"><i></i><i></i><i></i><i></i><i></i><i></i></span><strong>A4縦・全線6段</strong><small>0k000m～56k100m</small></button>
       <button class="print-layout" data-print-layout="section"><span class="page-shape landscape"><i></i></span><strong>A4横・指定区間1段</strong><small>指定区間を横長1段で</small></button>
@@ -182,7 +182,7 @@
       <button id="useTimeRangeBtn" class="use-time-range">時間計算で選んだ区間を使う</button>
     </div>
     <button id="printTimeToggle" class="print-time-toggle" type="button" aria-pressed="false" disabled><span>◷</span><strong>計算値を表示</strong><small>速度表示時だけ、6段目右側の空白へ表示</small></button>
-    <div class="print-rule"><strong>表示内容</strong><span>駅・トンネル・勾配は常に表示し、その他は現在の画面の設定を引き継ぎます。</span></div>
+    <div class="print-rule"><strong>表示内容</strong><span>駅・トンネルは常に表示。その他の設備は画面の表示設定・縮尺を引き継ぎます。勾配・速度は「横から：勾配図」で印刷します。</span></div>
     <button id="startPrintBtn" class="start-print-button">印刷プレビューへ</button>
     <p class="print-help">印刷画面でプリンターを選ぶと紙へ、「PDFに保存」を選ぶとPDFになります。</p>
   </section>
@@ -195,6 +195,7 @@
   <script src="route-data.js"></script>
   <script src="speed-data.js"></script>
   <script src="asset-data.js"></script>
+  <script src="pan-motion.js"></script>
   <script src="app.js"></script>
   <script src="list-print.js"></script>
 </body>

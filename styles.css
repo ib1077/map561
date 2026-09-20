@@ -97,3 +97,35 @@ body.fallback-landscape{--navigator-height:44px}body.fallback-landscape .navigat
 
 /* Curves flank the shared equipment line; reserve room above the distance ruler. */
 body.asset-strip-open .route-asset-strip,body.fallback-landscape .route-asset-strip{min-height:110px}body.fallback-landscape #railViewport{bottom:max(33.333%,110px)}@media(orientation:landscape) and (max-height:700px){.route-asset-strip{min-height:110px}#railViewport{bottom:max(33.333%,110px)}}.distance-ruler{left:0}
+
+.print-view-choice{display:flex;gap:6px;margin:10px 0}.print-view-choice button{flex:1;padding:10px 5px;border:1px solid #aab7b0;border-radius:8px;background:#fffdf7;font-size:13px;color:#36534a}.print-view-choice button.active{background:#e6efea;border-color:#4e7662;font-weight:800;box-shadow:inset 0 0 0 1px #4e7662}
+
+
+/* 距離移動は必要なときだけ開き、路線図の高さを優先する。 */
+.navigator-button{width:44px;height:40px;border:0;border-radius:9px;background:transparent;color:#fff;font-size:11px;font-weight:800}.navigator-button.active,.navigator-button:hover{background:#ffffff1c;outline:2px solid #ffffff80}
+body:not(.navigator-open){--navigator-height:0px}body:not(.navigator-open) .route-navigator{height:0;min-height:0;overflow:hidden;padding-top:0;padding-bottom:0;border:0;opacity:0;pointer-events:none}body.navigator-open .route-navigator{opacity:1;pointer-events:auto}
+@media(orientation:landscape) and (max-height:700px){body.navigator-open{--navigator-height:44px}body:not(.navigator-open) .route-navigator{height:0}}
+body.fallback-landscape.navigator-open{--navigator-height:44px}
+
+/* 右側に操作を集約し、路線図の面積を優先する。 */
+.topbar{grid-template-columns:1fr;padding-left:12px}.side-controls{position:absolute;z-index:11;top:7px;right:7px;bottom:7px;display:flex;flex-direction:column;gap:4px;pointer-events:none}.side-controls>*{pointer-events:auto}.side-button{width:48px;min-height:40px;padding:2px 3px;border:1px solid #aeb8b7;border-radius:9px;background:#faf8f0eb;color:#173b4c;font-size:11px;font-weight:800;box-shadow:0 2px 7px #173b4c24;backdrop-filter:blur(4px)}.side-button.active,.side-button:active{border-color:#17495e;background:#dfeeea;color:#103e50}.side-move{background:#173b4c;color:#fff;border-color:#173b4c}.side-settings{display:grid;place-items:center;gap:0;margin-top:auto;font-size:20px;line-height:16px}.side-settings small{display:block;font-size:9px;line-height:11px;font-weight:800}.side-controls-spacer{flex:1;min-height:0}.speed-overlay-tools{right:61px}.zoom-buttons{right:63px}.navigator-scale{margin-right:65px}.navigator-control{grid-template-columns:34px minmax(0,1fr) 64px}.rail-viewport,.asset-table-wrap{scrollbar-width:none}.rail-viewport::-webkit-scrollbar,.asset-table-wrap::-webkit-scrollbar{display:none}.distance-ruler{height:21px;font-size:13px;line-height:20px;color:#33494d;background:#f8f5ebf5}.distance-ruler .half{font-size:7px;color:#8c908a}.settings-list-button{width:100%;min-height:50px;margin:12px 0 8px;display:grid;grid-template-columns:30px 1fr;grid-template-rows:1fr 1fr;align-items:center;padding:6px 10px;border:1px solid #b7b0a2;border-radius:10px;background:#fffdf7;text-align:left}.settings-list-button span{grid-row:1/3;font-size:19px;text-align:center}.settings-list-button strong{font-size:13px}.settings-list-button small{font-size:10px;color:#68716e}
+@media(max-width:620px){.side-controls{right:5px;top:5px;bottom:5px;gap:3px}.side-button{width:44px;min-height:37px;font-size:10px}.side-settings{font-size:18px}.speed-overlay-tools{right:54px}.zoom-buttons{right:55px}.navigator-scale{margin-right:58px}.navigator-control{grid-template-columns:27px minmax(0,1fr) 57px}.distance-ruler{font-size:12px}.distance-ruler .half{font-size:7px}}
+
+/* Controls belong to the reserved right rail, not the map overlay. */
+@media screen {
+  body .app-shell{grid-template-columns:minmax(0,1fr) 58px;grid-template-rows:minmax(0,1fr)}
+  body .topbar,body.fallback-landscape .topbar{grid-column:2;grid-row:1;width:58px;height:100%;min-height:0;display:block;padding:5px;background:var(--navy);overflow-y:auto;overflow-x:hidden;scrollbar-width:none}
+  body .brand{display:none}
+  body .topbar .side-controls{position:static;inset:auto;width:100%;min-width:0;display:flex;flex-direction:column;align-items:stretch;gap:5px;pointer-events:auto}
+  body .topbar .side-button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;flex:0 0 49px;width:100%;min-width:0;max-width:100%;height:49px;min-height:49px;margin:0;padding:3px 1px;font-size:10px;line-height:13px;border-radius:8px;box-shadow:none}
+  body .topbar .side-icon{display:block;font-size:22px;line-height:24px;height:24px}
+  body .main-stage,body.fallback-landscape .main-stage{grid-column:1;grid-row:1;grid-template-rows:var(--navigator-height) minmax(0,1fr)}
+  body.list-mode .main-stage{grid-template-rows:minmax(0,1fr)}
+  body .bottom-dock,body.fallback-landscape .bottom-dock{display:contents}
+  body .dock-tabs{display:none!important}
+  body .info-bar,body .time-panel{position:absolute;left:0;right:0;bottom:0;max-height:100%;z-index:10}
+  body.fallback-landscape .info-bar,body.fallback-landscape .time-panel{position:absolute;left:0;right:0;bottom:0;max-height:100%}
+  body .speed-overlay-tools{right:8px}
+  body .zoom-buttons{right:10px}
+  @media(max-height:340px){body .topbar .side-button{flex-basis:43px;height:43px;min-height:43px}body .topbar .side-controls{gap:3px}}
+}
