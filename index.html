@@ -16,7 +16,7 @@
 <body class="launch-waiting">
   <section id="launchScreen" class="launch-screen" aria-labelledby="launchTitle">
     <div class="launch-card">
-      <header><span class="launch-mark" aria-hidden="true"></span><div><h1 id="launchTitle">智頭線 路線図</h1><p>Ver.13.9T</p></div></header>
+      <header><span class="launch-mark" aria-hidden="true"></span><div><h1 id="launchTitle">智頭線 路線図</h1><p>Ver.13.9V</p></div></header>
       <div class="launch-choices">
         <button data-launch-mode="route"><strong>路線図のみ</strong><span>勾配・構造物を表示</span></button>
         <div class="launch-speed-choice"><button data-launch-mode="speed"><strong>路線図＋速度</strong><span>選択した列車の速度を重ねる</span></button><select id="launchTrain" aria-label="速度を表示する列車"><option value="7000">7000</option><option value="187">187</option><option value="3500">普通3500</option></select></div>
@@ -30,7 +30,6 @@
     <header class="topbar">
       <div class="brand"><span class="brand-mark" aria-hidden="true"></span><strong>智頭線</strong><span id="modeTitle">路線図</span></div>
       <nav class="side-controls" aria-label="表示と操作">
-        <button id="navigatorBtn" class="side-button side-move" aria-label="距離移動バーを開く" title="距離移動" aria-expanded="false"><span class="side-icon" aria-hidden="true">⇔</span><span>移動</span></button>
         <button class="side-button mode-tab active" data-mode="route"><span class="side-icon" aria-hidden="true">＃</span><span>路線</span></button>
         <button class="side-button mode-tab" data-mode="speed"><span class="side-icon" aria-hidden="true">📉</span><span>速度</span></button>
         <button id="timeSideBtn" class="side-button" aria-label="時間計算を開く" aria-expanded="false"><span class="side-icon" aria-hidden="true">◷</span><span>時間</span></button>
@@ -39,13 +38,10 @@
     </header>
 
     <main class="main-stage">
-      <section class="route-navigator" aria-label="全線の表示位置">
-        <div class="navigator-scale" aria-hidden="true">
-          <span style="--pos:0%"><b>0</b><small>上</small></span><span style="--pos:17.825%"><b>10</b><small>岩</small></span><span style="--pos:35.651%"><b>20</b><small>苔</small></span><span style="--pos:53.476%"><b>30</b><small>河</small></span><span style="--pos:71.301%"><b>40</b><small></small></span><span style="--pos:89.127%"><b>50</b><small></small></span>
-        </div>
-        <div class="navigator-control"><span class="navigator-end">0k</span><input id="positionSlider" type="range" min="0" max="56.1" step="0.01" value="0" aria-label="表示する距離"><output id="positionOutput" for="positionSlider">0k000m</output></div>
-      </section>
+
       <section id="routeWorkspace" class="workspace" aria-label="路線図">
+        <div class="route-overview" role="img" aria-label="全線56.1kmの表示範囲"><span id="viewWindow"></span></div>
+        <div id="distanceRuler" class="distance-ruler" aria-hidden="true"></div>
         <div class="status-pills"><button id="fitBtn" class="status-button">全体</button><span>1本指で縦横移動</span></div>
         <div id="railViewport" class="rail-viewport">
           <div id="routeCanvas" class="route-canvas">
@@ -55,7 +51,7 @@
         <div id="assetStrip" class="route-asset-strip" aria-label="路線図と同じ縮尺の設備帯">
           <canvas id="assetStripCanvas"></canvas>
         </div>
-        <div id="distanceRuler" class="distance-ruler" aria-hidden="true"></div>
+
         <div id="speedOverlayTools" class="speed-overlay-tools hidden" aria-label="速度カーブ選択">
           <select id="trainSelect" aria-label="速度を表示する列車"><option value="7000">7000</option><option value="187">187</option><option value="3500">3500</option></select>
           <label class="line-toggle up"><input type="checkbox" data-speed="up" checked><span>上り</span></label>

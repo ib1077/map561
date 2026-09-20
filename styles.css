@@ -129,3 +129,15 @@ body.fallback-landscape.navigator-open{--navigator-height:44px}
   body .zoom-buttons{right:10px}
   @media(max-height:340px){body .topbar .side-button{flex-basis:43px;height:43px;min-height:43px}body .topbar .side-controls{gap:3px}}
 }
+
+/* Keep station names legible above the equipment labels. */
+.route-station-name{paint-order:stroke fill;stroke:#fcfcfa;stroke-width:3px;stroke-linejoin:round}
+/* Read-only overview and fixed distance marks at the top of the map. */
+@media screen {
+ body .main-stage,body.fallback-landscape .main-stage{grid-template-rows:minmax(0,1fr)}
+ body .route-overview{position:absolute;left:0;right:0;top:0;height:4px;background:#d8dfdc;z-index:7;pointer-events:none;overflow:hidden}
+ body .route-overview span{position:absolute;top:0;height:4px;min-width:2px;background:#39768b;border-radius:2px}
+ body .distance-ruler{top:4px;bottom:auto;height:21px;line-height:20px;border-top:0;border-bottom:1px solid #c8c2b6;pointer-events:none}
+ body #railViewport{top:25px}
+ body .speed-overlay-tools{top:31px}
+}
