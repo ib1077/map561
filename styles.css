@@ -153,3 +153,6 @@ body.fallback-landscape.navigator-open{--navigator-height:44px}
  body.fallback-landscape #routeWorkspace .route-asset-strip,body.asset-strip-open #routeWorkspace .route-asset-strip{height:var(--plan-height);min-height:0}
  body.fallback-landscape #railViewport,body.asset-strip-open #railViewport{bottom:var(--plan-height)}
 }
+
+/* The route line is decorative; tunnel endpoint targets remain reachable. */
+.route-line{pointer-events:none}
