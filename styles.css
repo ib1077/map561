@@ -141,3 +141,15 @@ body.fallback-landscape.navigator-open{--navigator-height:44px}
  body #railViewport{top:25px}
  body .speed-overlay-tools{top:31px}
 }
+
+/* 70:30 split, excluding the fixed 25px distance header. */
+@media screen and (orientation:landscape) and (max-height:700px){
+ body #routeWorkspace{--plan-height:calc((100% - 25px) * .3)}
+ body #routeWorkspace .route-asset-strip{height:var(--plan-height);min-height:0}
+ body #railViewport{bottom:var(--plan-height)}
+}
+@media screen {
+ body.fallback-landscape #routeWorkspace,body.asset-strip-open #routeWorkspace{--plan-height:calc((100% - 25px) * .3)}
+ body.fallback-landscape #routeWorkspace .route-asset-strip,body.asset-strip-open #routeWorkspace .route-asset-strip{height:var(--plan-height);min-height:0}
+ body.fallback-landscape #railViewport,body.asset-strip-open #railViewport{bottom:var(--plan-height)}
+}
