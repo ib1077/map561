@@ -5,3 +5,25 @@
 .lp-toolbar button,.lp-toolbar select,.lp-toolbar input[type=number]{padding:6px;border:1px solid #aab2ac;border-radius:5px;background:#fff;font:inherit}.lp-toolbar input[type=number]{width:85px}.lp-toolbar small{flex-basis:100%;color:#59615d}.lp-types{display:flex;flex-wrap:wrap;gap:10px;padding:8px}.lp-toolbar details{flex-basis:100%}
 #lpPages{padding:16px;width:max-content;min-width:100%}.lp-page{box-sizing:border-box;width:194mm;height:280mm;padding:0;margin:0 auto 16px;background:white;color:#283330;box-shadow:0 2px 9px #0002;font-family:'Noto Sans CJK JP','Yu Gothic',Meiryo,sans-serif;display:flex;flex-direction:column}.lp-page header{height:9mm;flex-shrink:0;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #7f8f86;font-size:10pt;padding:0 2mm}.lp-page header strong{font-size:12pt}.lp-page footer{height:7mm;flex-shrink:0;text-align:right;padding:2mm;font-size:8pt;color:#606a64}.lp-columns{height:264mm;display:flex;gap:5mm;padding-top:2mm}.lp-column{height:262mm;width:94.5mm;overflow:hidden}.lp-column table{border-collapse:collapse;table-layout:fixed;width:100%;font-size:10pt;line-height:1.3}.lp-column td,.lp-column th{padding:1mm .8mm;border-bottom:.2mm solid #dce0da;overflow-wrap:anywhere;text-align:left;vertical-align:top}.lp-column td:first-child{white-space:nowrap;font-variant-numeric:tabular-nums}.lp-column thead th{background:#e9ede8;font-size:9pt;color:#49594f}.lp-column tr{--tint:#f6f6f3;--mark:#a7ada3;background:var(--tint)}.lp-column td:nth-child(2){border-left:1mm solid var(--mark);font-size:9pt}.lp-column .lp-cat-2{--tint:#eaf2eb;--mark:#628773;font-weight:700}.lp-column .lp-cat-6{--tint:#f3eedc;--mark:#a28b49;font-weight:700}.lp-column .lp-cat-3{--tint:#f5f0e8;--mark:#ae997e}.lp-column .lp-cat-8,.lp-column .lp-cat-9{--tint:#edf2f6;--mark:#718da0}.lp-column .lp-cat-10,.lp-column .lp-cat-11,.lp-column .lp-cat-12{--tint:#f4f0f5;--mark:#aa98ac}.lp-column .lp-cat-7{--tint:#f7f5ed;--mark:#b3aa87}.lp-column .lp-cat-1{--tint:#f4f5f1;--mark:#b3b9a9}.lp-column .lp-cat-5{--tint:#eff4f2;--mark:#9aafa3}.lp-group th{background:#e3e9e3;color:#344e40;font-size:10pt}
 @media print{body.printing-list #listPrintDialog{display:block!important;position:static;overflow:visible;background:white}body.printing-list .lp-toolbar,body.printing-list #printSheet,body.printing-list #launchScreen{display:none!important}body.printing-list #lpPages{padding:0;width:auto;min-width:0}body.printing-list .lp-page{margin:0;box-shadow:none;break-after:page;break-inside:avoid;print-color-adjust:exact;-webkit-print-color-adjust:exact}body.printing-list .lp-page:last-child{break-after:auto}body:not(.printing-list) #listPrintDialog{display:none!important}}
+.lp-column table{font-size:9.5pt;line-height:1.2}
+.lp-column td,.lp-column th{padding:.6mm .8mm}
+.lp-column tr{--tint:#fffdf8;--ink:#435557;color:var(--ink)}
+.lp-column .lp-cat-1{--ink:#477144;--tint:#fffdf8;--mark:#477144}
+.lp-column .lp-cat-2{--ink:#17623f;--tint:#edf3e8;--mark:#17623f}
+.lp-column .lp-cat-3{--ink:#63507f;--tint:#fffdf8;--mark:#63507f}
+.lp-column .lp-cat-5{--ink:#84613e;--tint:#fffdf8;--mark:#84613e}
+.lp-column .lp-cat-6{--ink:#816314;--tint:#faf4dd;--mark:#816314}
+.lp-column .lp-cat-7{--ink:#a56717;--tint:#fffdf8;--mark:#a56717}
+.lp-column .lp-cat-8{--ink:#9e242d;--tint:#efbfc4;--mark:#9e242d;font-weight:700}
+.lp-column .lp-cat-9{--ink:#125da1;--tint:#bad9ee;--mark:#125da1;font-weight:700}
+.lp-column .lp-cat-10{--ink:#ac3540;--tint:#fffdf8;--mark:#ac3540}
+.lp-column .lp-cat-11{--ink:#216eaa;--tint:#fffdf8;--mark:#216eaa}
+.lp-column .lp-cat-12{--ink:#787080;--tint:#fffdf8;--mark:#787080}
+.lp-relocation{display:block;font-size:7.5pt;line-height:1.25;margin-top:.5mm;font-weight:400}
+.lp-column tr:not(.lp-cat-2):not(.lp-cat-8):not(.lp-cat-9){--tint:#fff}
+.lp-column thead th,.lp-group th{background:#fff}
+.lp-history-body{flex:1;padding:5mm 2mm;color:#283330;font-size:10pt;line-height:1.5}
+.lp-history-body p{margin:0 0 5mm}
+.lp-history-body table{border-collapse:collapse;table-layout:fixed;width:100%;background:#fff;font-size:9.5pt}
+.lp-history-body th,.lp-history-body td{border:0.2mm solid #aeb8b2;padding:2mm 1mm;text-align:left;vertical-align:top;overflow-wrap:anywhere;background:#fff}
+.lp-history-body td:nth-child(n+3){white-space:nowrap;font-variant-numeric:tabular-nums}

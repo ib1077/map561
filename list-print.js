@@ -5,7 +5,7 @@
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const km=n=>{const m=Math.round(Math.abs(n)*1000);return `${n<0?'−':''}${String(Math.floor(m/1000)).padStart(2,'0')}k${String(m%1000).padStart(3,'0')}m`;};
   const dialog=document.createElement('section');dialog.id='listPrintDialog';dialog.hidden=true;
-  dialog.innerHTML=`<div class="lp-toolbar"><strong>構造物一覧の印刷</strong><button id="lpClose">閉じる</button><label>並べ方 <select id="lpOrder"><option value="distance">距離順</option><option value="category">種別順</option></select></label><label>範囲 <select id="lpRange"><option value="all">全線</option><option value="section">区間指定</option></select></label><span id="lpRangeInputs" hidden><input id="lpFrom" type="number" step="0.001" value="0" aria-label="開始km"> ～ <input id="lpTo" type="number" step="0.001" value="56.1" aria-label="終了km"> km</span><button id="lpRefresh">プレビュー更新</button><button id="lpPrint">印刷・PDF保存</button><details><summary>印刷する種別</summary><div class="lp-types">${groups.filter(([code])=>rows.some(r=>String(r.categoryCode)===code)).map(([code,name])=>`<label><input type="checkbox" value="${code}" checked>${name}</label>`).join('')}</div></details><span id="lpStatus" role="status"></span><small>A4縦・2段／左段の上から下、次に右段へ。文字は10pt。印刷倍率100%・ブラウザのヘッダーとフッターなしを推奨。</small></div><div id="lpPages"></div>`;
+  dialog.innerHTML=`<div class="lp-toolbar"><strong>構造物一覧の印刷</strong><button id="lpClose">閉じる</button><label>並べ方 <select id="lpOrder"><option value="distance">距離順</option><option value="category">種別順</option></select></label><label>範囲 <select id="lpRange"><option value="all">全線</option><option value="section">区間指定</option></select></label><span id="lpRangeInputs" hidden><input id="lpFrom" type="number" step="0.001" value="0" aria-label="開始km"> ～ <input id="lpTo" type="number" step="0.001" value="56.1" aria-label="終了km"> km</span><button id="lpRefresh">プレビュー更新</button><button id="lpPrint">印刷・PDF保存</button><details><summary>印刷する種別</summary><div class="lp-types">${groups.filter(([code])=>rows.some(r=>String(r.categoryCode)===code)).map(([code,name])=>`<label><input type="checkbox" value="${code}" checked>${name}</label>`).join('')}</div></details><span id="lpStatus" role="status"></span><small>A4縦・2段／左段の上から下、次に右段へ。文字は9.5pt。末尾に移設履歴を別紙で追加。印刷倍率100%・ブラウザのヘッダーとフッターなしを推奨。</small></div><div id="lpPages"></div>`;
   document.body.append(dialog);
   const button=document.createElement('button');button.id='assetPrintBtn';button.textContent='一覧を印刷・PDF';button.className='lp-open';$('.asset-toolbar').append(button);
   function details(r){
@@ -35,7 +35,13 @@
       if(column.scrollHeight>column.clientHeight+1){tbody.lastElementChild.remove();if(heading)tbody.lastElementChild.remove();advance();tbody.insertAdjacentHTML('beforeend',(category?`<tr class="lp-group"><th colspan="3">${esc(groups.find(([c])=>Number(c)===code)?.[1]||r.type1)}${heading?'':'（続き）'}</th></tr>`:'')+rowHtml(r));}
       previous=code;
     }
-    [...pages.children].forEach((p,i)=>p.querySelector('footer').textContent=`${i+1} / ${pages.children.length}　　左段 ↓ → 右段 ↓`);
+    const history=window.ASSET_RELOCATIONS||[];
+    if(history.length){
+      const appendix=document.createElement('article');appendix.className='lp-page lp-history-page';
+      appendix.innerHTML=`<header><strong>智頭線 構造物の移設履歴</strong><span>${history.length}件</span></header><div class="lp-history-body"><p>元資料から変更した位置の一覧です。本表の距離は移設後の位置を使用しています。区間・種別の絞り込みにかかわらず、履歴は全${history.length}件を掲載します。</p><table><colgroup><col style="width:8mm"><col><col style="width:25mm"><col style="width:25mm"><col style="width:22mm"></colgroup><thead><tr><th>No.</th><th>構造物・設備</th><th>旧位置</th><th>移設後</th><th>移設年月</th></tr></thead><tbody>${history.map((h,i)=>`<tr><td>${i+1}</td><td>${esc(h.name)}</td><td>${km(h.fromKm)}</td><td>${km(h.toKm)}</td><td>${esc(h.date)}</td></tr>`).join('')}</tbody></table></div><footer></footer>`;
+      pages.append(appendix);
+    }
+    [...pages.children].forEach((p,i)=>p.querySelector('footer').textContent=`${i+1} / ${pages.children.length}　　${p.classList.contains('lp-history-page')?'移設履歴':'左段 ↓ → 右段 ↓'}`);
     $('#lpStatus').textContent=`${count}件・${pages.children.length}ページ`;
     return true;
   }

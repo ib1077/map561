@@ -156,3 +156,49 @@ body.fallback-landscape.navigator-open{--navigator-height:44px}
 
 /* The route line is decorative; tunnel endpoint targets remain reachable. */
 .route-line{pointer-events:none}
+/* Speed corrections: the lower map becomes a compact editing tray. */
+.speed-editor{position:absolute;z-index:15;bottom:5px;left:6px;right:6px;max-height:54%;overflow:auto;padding:7px 10px;background:rgba(255,253,245,.98);border:1px solid #acb9b9;border-radius:12px;box-shadow:0 2px 12px #143d4b26;color:#173e4b;font-size:13px;touch-action:pan-y}
+.speed-editor.hidden{display:none}
+.speed-edit-row{display:flex;align-items:center;gap:6px;min-height:32px;margin:2px 0;flex-wrap:wrap}
+.speed-edit-row button,.speed-edit-row select{min-height:32px;padding:4px 10px;border:1px solid #aab9bb;border-radius:7px;background:#fffdf8;color:#173e4b;font:inherit;font-weight:600}
+.speed-edit-row button:disabled{opacity:.4}
+.speed-edit-row strong{margin-right:auto;font-size:14px}
+.speed-edit-row input[type=number]{width:72px;min-height:32px;padding:3px 7px;border:1px solid #839da4;border-radius:6px;background:white;color:#173e4b;font:inherit;font-size:17px;user-select:text;-webkit-user-select:text}
+#editStatus{flex:1;min-width:140px;font-size:12px}
+#editApply,#editSpeedBtn[aria-pressed=true]{background:#173e4b;color:white}
+.speed-editor small{display:block;font-size:11px;color:#597077;margin-top:3px}
+#editSpeedBtn{white-space:nowrap}
+@media print{.speed-editor,#editSpeedBtn{display:none!important}}
+/* Compact inventory: category text stays visible when a row is selected. */
+body .asset-table{font-size:10.5px;line-height:1.2;min-width:710px}
+body .asset-table th{height:25px;padding:3px 6px;font-size:10px}
+body .asset-table td{height:23px;padding:2px 6px}
+.asset-table tbody tr{--asset-ink:#435557;--asset-bg:#fffdf8}
+.asset-table tbody tr.asset-category-1{--asset-ink:#477144}
+.asset-table tbody tr.asset-category-2{--asset-ink:#17623f;--asset-bg:#edf3e8;font-weight:800}
+.asset-table tbody tr.asset-category-3{--asset-ink:#63507f}
+.asset-table tbody tr.asset-category-5{--asset-ink:#84613e}
+.asset-table tbody tr.asset-category-6{--asset-ink:#816314;--asset-bg:#faf4dd;font-weight:700}
+.asset-table tbody tr.asset-category-7{--asset-ink:#a56717}
+.asset-table tbody tr.asset-category-8{--asset-ink:#9e242d;--asset-bg:#efbfc4;font-weight:800}
+.asset-table tbody tr.asset-category-9{--asset-ink:#125da1;--asset-bg:#bad9ee;font-weight:800}
+.asset-table tbody tr.asset-category-10{--asset-ink:#ac3540}
+.asset-table tbody tr.asset-category-11{--asset-ink:#216eaa}
+.asset-table tbody tr.asset-category-12{--asset-ink:#787080}
+.asset-table #assetRows>tr>td{color:var(--asset-ink);background:var(--asset-bg)}
+body .asset-table tbody tr>td:first-child{border-right-color:var(--asset-ink)}
+body .asset-table tbody tr.selected>td{box-shadow:inset 0 2px #bf8b24,inset 0 -2px #bf8b24}
+body .asset-table tbody tr.selected>td:first-child{box-shadow:inset 3px 0 #bf8b24,inset 0 2px #bf8b24,inset 0 -2px #bf8b24}
+@media(hover:hover){body .asset-table tbody tr:hover>td{filter:brightness(.96)}}
+.asset-change-mark{font-size:8px;margin-left:3px;color:inherit}
+.asset-history{padding:9px 12px;background:#faf7ef;font-size:11px;line-height:1.6;color:#42555b}
+.asset-history summary{cursor:pointer;font-weight:700}
+.asset-history ol{padding-left:22px;margin:6px 0}
+body #assetChangeNote{white-space:normal;overflow:visible;text-overflow:clip;font-size:10px;color:#f4dfac}
+body #assetChangeNote[hidden]{display:none}
+body .asset-table{background:#fff}
+body .asset-table tbody tr:not(.asset-category-2):not(.asset-category-8):not(.asset-category-9){--asset-bg:#fff}
+body .asset-table th,body .asset-table th:first-child{background:#fff}
+body .asset-table tbody tr:hover>td{filter:none}
+.asset-history{background:#fff}
+.asset-table #assetRows>tr.asset-category-2,.asset-table #assetRows>tr.asset-category-8,.asset-table #assetRows>tr.asset-category-9{font-weight:700}
