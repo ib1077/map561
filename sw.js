@@ -1,4 +1,4 @@
-const CACHE="chizu-line-v2-52";
+const CACHE="chizu-line-v2-53";
 const FILES=["./","./index.html","./styles.css","./app.js","./auto-scroll.js","./speed-editor.js","./pan-motion.js","./route-data.js","./speed-data.js","./asset-data.js","./manifest.webmanifest","./icon.svg","./list-print.js","./list-print.css"];
 self.addEventListener("install",event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(FILES)).then(()=>self.skipWaiting())));
 self.addEventListener("activate",event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));

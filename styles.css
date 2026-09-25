@@ -221,3 +221,4 @@ body .asset-table tbody tr:hover>td{filter:none}
 #autoStatus{flex-basis:100%;font-size:10px;color:#617271}
 .auto-scroll-panel.hidden,body.list-mode #autoScrollBtn{display:none}
 @media print{.auto-scroll-panel{display:none!important}}
+.tunnel-name{font-size:15px;font-weight:700;fill:#4e5d56;paint-order:stroke fill;stroke:#fcfcfa;stroke-width:3px;stroke-linejoin:round}
