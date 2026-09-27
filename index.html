@@ -16,13 +16,13 @@
 <body class="launch-waiting">
   <section id="launchScreen" class="launch-screen" aria-labelledby="launchTitle">
     <div class="launch-card">
-      <header><span class="launch-mark" aria-hidden="true"></span><div><h1 id="launchTitle">智頭線 路線図</h1><p>Ver.13.12A</p></div></header>
+      <header><span class="launch-mark" aria-hidden="true"></span><div><h1 id="launchTitle">智頭線 路線図</h1><p>Ver.13.13</p></div></header>
       <div class="launch-choices">
-        <button data-launch-mode="route"><strong>路線図のみ</strong><span>勾配・構造物を表示</span></button>
-        <div class="launch-speed-choice"><button data-launch-mode="speed"><strong>路線図＋速度</strong><span>選択した列車の速度を重ねる</span></button><select id="launchTrain" aria-label="速度を表示する列車"><option value="7000">7000</option><option value="187">187</option><option value="3500">普通3500</option></select></div>
-        <button data-launch-mode="list"><strong>構造物一覧画面</strong><span>距離順の表から探す</span></button>
+        <button data-launch-mode="route"><strong>路線図</strong><span>勾配・構造物を表示</span></button>
+        <button data-launch-mode="list"><strong>構造物一覧</strong><span>距離順の表から探す</span></button>
+        <button data-launch-mode="print" class="home-print"><strong>印刷</strong><span>路線図・構造物一覧を印刷／PDF保存</span></button>
       </div>
-      <div class="launch-help"><p><b>指1本</b>：スクロール　 <b>指2本</b>：拡大・縮小</p><p>構造物をタップ：一覧画面へ</p><p><b>🔄</b>：縦／横　 <b>☰</b>：MENU画面へ</p></div>
+      <div class="launch-help"><p>指1本：移動　指2本：拡大・縮小</p><p>構造物をタップ：その場で詳細表示</p><p>速度は路線図の「速度」ボタンから</p></div>
       <p id="launchStatus" class="launch-status">画面を選ぶとそのまま開きます</p>
     </div>
   </section>
@@ -30,7 +30,7 @@
     <header class="topbar">
       <div class="brand"><span class="brand-mark" aria-hidden="true"></span><strong>智頭線</strong><span id="modeTitle">路線図</span></div>
       <nav class="side-controls" aria-label="表示と操作">
-        <button class="side-button mode-tab active" data-mode="route"><span class="side-icon" aria-hidden="true">＃</span><span>路線</span></button>
+        <button id="homeBtn" class="side-button" aria-label="HOMEへ戻る"><span class="side-icon" aria-hidden="true">⌂</span><span>HOME</span></button>
         <button class="side-button mode-tab" data-mode="speed"><span class="side-icon" aria-hidden="true">📉</span><span>速度</span></button>
         <button id="autoScrollBtn" class="side-button" aria-expanded="false" aria-label="オートスクロール"><span class="side-icon" aria-hidden="true">▶</span><span>自動</span></button>
         <button id="timeSideBtn" class="side-button" aria-label="時間計算を開く" aria-expanded="false"><span class="side-icon" aria-hidden="true">◷</span><span>時間</span></button>
@@ -101,7 +101,7 @@
         <section id="infoBar" class="info-bar" aria-live="polite" aria-hidden="true">
           <button id="infoClose" class="info-close" aria-label="詳細を閉じる">×</button>
           <div class="info-main"><strong id="infoName">詳細情報</strong><span id="infoKm">設備を選択してください</span></div>
-          <div class="info-detail"><span id="infoType">速度線などをタップ</span><span id="infoRelation">構造物をタップすると一覧の該当行へ移動します</span></div>
+          <div class="info-detail"><span id="infoType">速度線などをタップ</span><span id="infoRelation">構造物の名称・位置などを表示します</span></div>
         </section>
         <section id="timePanel" class="time-panel" aria-label="所要時間計算" aria-hidden="true">
           <div class="time-head">
@@ -146,11 +146,8 @@
     <div class="settings-layer">
     <aside id="settings" class="settings" aria-label="表示設定" aria-hidden="true">
       <div class="settings-head"><div><strong>表示設定</strong><span>駅・トンネル・勾配は常に表示</span></div><button id="menuClose" class="icon-button dark" aria-label="設定を閉じる">×</button></div>
-      <button id="listModeBtn" class="settings-list-button"><span>▤</span><strong>構造物・設備一覧</strong><small>距離順・種別順で確認</small></button>
       <div id="layerSettings" class="layer-settings"></div>
       <button id="resetLayers" class="reset-button">すべて自動に戻す</button>
-      <button id="printSettingsBtn" class="print-open-button"><span>▣</span><strong>印刷・PDF</strong><small>A4縦6段／A4横1段</small></button>
-      <div class="browser-note">動作基準：Chrome／Edge／iPhone Safari</div>
     </aside>
     <button id="scrim" class="scrim hidden" aria-label="設定を閉じる"></button>
     </div>
@@ -160,6 +157,7 @@
   <button id="printScrim" class="print-scrim hidden" aria-label="印刷設定を閉じる"></button>
   <section id="printDialog" class="print-dialog" role="dialog" aria-modal="true" aria-labelledby="printDialogTitle" aria-hidden="true">
     <div class="print-dialog-head"><div><strong id="printDialogTitle">印刷・PDF</strong><span>紙に合わせて路線図を整列します</span></div><button id="printDialogClose" class="icon-button dark" aria-label="印刷設定を閉じる">×</button></div>
+    <button id="homeListPrintBtn" class="home-list-print">構造物一覧を印刷・PDF</button>
     <div class="print-view-choice" role="group" aria-label="印刷する図"><button class="active" data-print-view="gradient" aria-pressed="true">横から：勾配図</button><button data-print-view="plan" aria-pressed="false">上から：位置図</button></div>
     <div class="print-layouts" aria-label="印刷形式">
       <button class="print-layout active" data-print-layout="full"><span class="page-shape portrait"><i></i><i></i><i></i><i></i><i></i><i></i></span><strong>A4縦・全線6段</strong><small>0k000m～56k100m</small></button>
