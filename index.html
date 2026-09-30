@@ -16,7 +16,7 @@
 <body class="launch-waiting">
   <section id="launchScreen" class="launch-screen" aria-labelledby="launchTitle">
     <div class="launch-card">
-      <header><span class="launch-mark" aria-hidden="true"></span><div><h1 id="launchTitle">智頭線 路線図</h1><p>Ver.13.13</p></div></header>
+      <header><span class="launch-mark" aria-hidden="true"></span><div><h1 id="launchTitle">智頭線 路線図</h1><p>Ver.13.13A</p></div></header>
       <div class="launch-choices">
         <button data-launch-mode="route"><strong>路線図</strong><span>勾配・構造物を表示</span></button>
         <button data-launch-mode="list"><strong>構造物一覧</strong><span>距離順の表から探す</span></button>
@@ -81,11 +81,12 @@
       <section id="assetWorkspace" class="workspace asset-workspace hidden" aria-label="構造物・設備一覧">
         <div class="asset-toolbar">
           <div><strong>構造物・設備一覧</strong><span id="assetCount">951件・距離順</span></div>
+          <label class="asset-order">並べ方 <select id="assetOrder"><option value="distance">距離順</option><option value="category">種別順</option></select></label>
           <label class="asset-search"><span>検索</span><input id="assetSearch" type="search" placeholder="名称・信号名・種類など"></label>
         </div>
         <div id="assetTableWrap" class="asset-table-wrap">
           <table class="asset-table">
-            <thead><tr><th>距離</th><th>距離順</th><th>No.</th><th>カテゴリ</th><th>種別1</th><th>種別2</th><th>種別3</th></tr></thead>
+            <thead><tr><th>距離</th><th title="全データの距離順番号">距離順No.</th><th title="元資料の種別順番号">元種別No.</th><th>カテゴリ</th><th>種別1</th><th>種別2</th><th>種別3</th></tr></thead>
             <tbody id="assetRows"></tbody>
           </table>
           <details class="asset-history"><summary>移設履歴（7件）／※の行を選ぶと履歴を表示</summary><ol id="assetHistoryRows"></ol></details>

@@ -243,3 +243,6 @@ body #infoBar .info-close{width:30px;height:30px;top:3px;right:3px}
 body.list-mode .side-controls>:not(#homeBtn){display:none!important}
 @media(orientation:portrait) and (pointer:coarse){.launch-card{width:calc(100vh - 24px);max-height:calc(100vw - 20px)}.launch-card header{grid-column:1/-1}.launch-help{grid-row:2}.launch-card .launch-status{grid-column:1/-1}}
 @media print{#infoBar{display:none!important}}
+
+/* Compact reference numbers and list ordering */
+.asset-table td:nth-child(2),.asset-table td:nth-child(3){font-size:9px;color:#737b77;font-weight:400}.asset-table th:nth-child(2),.asset-table th:nth-child(3){font-size:10px}.asset-order{font-size:11px;white-space:nowrap}.asset-order select{padding:5px;border:1px solid #aaa597;border-radius:6px;background:white;color:#243c45}.asset-toolbar{flex-wrap:wrap}.asset-search{min-width:0;flex:1 1 160px}

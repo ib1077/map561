@@ -27,3 +27,5 @@
 .lp-history-body table{border-collapse:collapse;table-layout:fixed;width:100%;background:#fff;font-size:9.5pt}
 .lp-history-body th,.lp-history-body td{border:0.2mm solid #aeb8b2;padding:2mm 1mm;text-align:left;vertical-align:top;overflow-wrap:anywhere;background:#fff}
 .lp-history-body td:nth-child(n+3){white-space:nowrap;font-variant-numeric:tabular-nums}
+
+.lp-numbers{display:block;font-size:6.5pt;line-height:1.05;color:#657069;font-weight:400;letter-spacing:0}
