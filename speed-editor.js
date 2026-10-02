@@ -1,6 +1,6 @@
 /* Saved edits are separate from the supplied data and survive app updates. */
 window.createSpeedStore=function(profiles,storage){
- const key='chizu-speed-edits-v1',base=JSON.parse(JSON.stringify(profiles)),history=[];let edits={},warning='';
+ const key='chizu-speed-edits-v1'+(window.CHIZU_DATA_ID?':'+window.CHIZU_DATA_ID:''),base=JSON.parse(JSON.stringify(profiles)),history=[];let edits={},warning='';
  const address=(train,index,dir)=>`${train}:${index}:${dir}`;
  function validate(items){if(!Array.isArray(items)||items.length>10000)throw Error('速度データの形式が違います');const next={};for(const r of items){const p=base[r.train]?.points?.[r.index];if(!p||!['up','down'].includes(r.direction)||!Number.isInteger(r.index)||r.km!==p.km||r.original!==p[r.direction]||!Number.isFinite(r.value)||r.value<0||r.value>150)throw Error('元データまたは速度値が一致しません');const k=address(r.train,r.index,r.direction);if(k in next)throw Error('同じ地点の重複があります');next[k]={...r};}return next;}
  function apply(next){for(const [t,b] of Object.entries(base))b.points.forEach((p,i)=>{for(const d of ['up','down'])profiles[t].points[i][d]=next[address(t,i,d)]?.value??p[d];});}

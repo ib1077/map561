@@ -16,7 +16,7 @@
 <body class="launch-waiting">
   <section id="launchScreen" class="launch-screen" aria-labelledby="launchTitle">
     <div class="launch-card">
-      <header><span class="launch-mark" aria-hidden="true"></span><div><h1 id="launchTitle">智頭線 路線図</h1><p>Ver.13.13A</p></div></header>
+      <header><span class="launch-mark" aria-hidden="true"></span><div><h1 id="launchTitle">智頭線 路線図</h1><p>Ver.13.15A</p></div></header>
       <div class="launch-choices">
         <button data-launch-mode="route"><strong>路線図</strong><span>勾配・構造物を表示</span></button>
         <button data-launch-mode="list"><strong>構造物一覧</strong><span>距離順の表から探す</span></button>
@@ -41,6 +41,7 @@
     <main class="main-stage">
 
       <section id="routeWorkspace" class="workspace" aria-label="路線図">
+        <div class="display-bar" role="group" aria-label="設備の表示切替"><button id="equipmentToggle" type="button">設備 ON</button><button id="labelToggle" type="button">ラベル ON</button><button id="displayAuto" type="button">自動</button></div>
         <div class="route-overview" role="img" aria-label="全線56.1kmの表示範囲"><span id="viewWindow"></span></div>
         <div id="distanceRuler" class="distance-ruler" aria-hidden="true"></div>
         <div class="status-pills"><button id="fitBtn" class="status-button">全体</button><span>1本指で縦横移動</span></div>
@@ -194,10 +195,14 @@
   <script src="route-data.js"></script>
   <script src="speed-data.js"></script>
   <script src="asset-data.js"></script>
+  <script src="data-core.js"></script>
   <script src="pan-motion.js"></script>
   <script src="speed-editor.js"></script>
   <script src="auto-scroll.js"></script>
   <script src="app.js"></script>
+  <script src="jszip.min.js"></script>
+  <script src="xlsx-bridge.js"></script>
+  <script src="data-manager.js"></script>
   <script src="list-print.js"></script>
 </body>
 </html>

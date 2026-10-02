@@ -246,3 +246,27 @@ body.list-mode .side-controls>:not(#homeBtn){display:none!important}
 
 /* Compact reference numbers and list ordering */
 .asset-table td:nth-child(2),.asset-table td:nth-child(3){font-size:9px;color:#737b77;font-weight:400}.asset-table th:nth-child(2),.asset-table th:nth-child(3){font-size:10px}.asset-order{font-size:11px;white-space:nowrap}.asset-order select{padding:5px;border:1px solid #aaa597;border-radius:6px;background:white;color:#243c45}.asset-toolbar{flex-wrap:wrap}.asset-search{min-width:0;flex:1 1 160px}
+
+/* Ver.13.14A: reserved left menu and a separate display header. */
+@media screen {
+ body .app-shell,body.fallback-landscape .app-shell{grid-template-columns:58px minmax(0,1fr)}
+ body .topbar,body.fallback-landscape .topbar{grid-column:1}
+ body .main-stage,body.fallback-landscape .main-stage{grid-column:2}
+ .display-bar{position:absolute;top:0;left:0;right:0;height:44px;display:flex;align-items:center;gap:6px;padding:2px 8px;background:#f4f3ed;border-bottom:1px solid #bdc7c0;z-index:8}
+ .display-bar button{min-height:40px;min-width:82px;padding:3px 9px;border:1px solid #a4b1aa;border-radius:6px;background:#fff;color:#43524b;font-size:12px;font-weight:700;touch-action:manipulation}
+ .display-bar button.active{background:#dcece3;border-color:#39785e;color:#184f3d}
+ body .route-overview{top:44px}
+ body .distance-ruler{top:48px}
+ body #railViewport{top:69px}
+ body .speed-overlay-tools{top:75px}
+ body #routeWorkspace{--plan-height:calc((100% - 69px) * .3)}
+ body.fallback-landscape #routeWorkspace,body.asset-strip-open #routeWorkspace{--plan-height:calc((100% - 69px) * .3)}
+}
+@media screen and (orientation:landscape) and (max-height:700px){body #routeWorkspace{--plan-height:calc((100% - 69px) * .3)}}
+
+/* DATA management is outside the route layout. */
+#dataManager{position:fixed;inset:0;z-index:180;background:#e8ebe6;overflow:auto;padding:18px;touch-action:pan-y;user-select:text}
+#dataManager[hidden]{display:none}.data-card{width:min(100%,1000px);margin:auto;padding:18px;background:#fff;border:1px solid #b6c2b8;border-radius:10px;color:#203c35;font-size:14px;line-height:1.5}
+.data-card header{display:flex;align-items:center;justify-content:space-between;gap:12px}.data-card h2{margin:0;font-size:22px}.data-card button{min-height:42px;padding:8px 15px;border:1px solid #94aaa0;border-radius:6px;background:#edf4ef;color:#234c3a;font:inherit;font-weight:700;cursor:pointer}.data-card button:disabled{opacity:.45;cursor:default}.data-actions{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0}.data-apply,.data-restore{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:16px 0}.data-apply button{background:#1c5b44;color:#fff}.data-apply span,.data-restore span{flex:1;min-width:230px}.data-card table{border-collapse:collapse;width:min(100%,580px)}.data-card th,.data-card td{text-align:left;border-bottom:1px solid #d6dfd8;padding:4px 10px}.data-card td:last-child{font-variant-numeric:tabular-nums}.data-messages{margin-top:12px}.data-messages.error{color:#942d32}.data-messages.warning{color:#725922}.data-messages ul{padding-left:24px}.data-note{color:#596b62}.home-data{text-align:left}
+@media(max-width:620px){#dataManager{padding:8px}.data-card{padding:12px;font-size:13px}}
+@media print{#dataManager{display:none!important}}

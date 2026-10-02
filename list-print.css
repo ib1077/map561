@@ -29,3 +29,10 @@
 .lp-history-body td:nth-child(n+3){white-space:nowrap;font-variant-numeric:tabular-nums}
 
 .lp-numbers{display:block;font-size:6.5pt;line-height:1.05;color:#657069;font-weight:400;letter-spacing:0}
+
+.lp-legend-body{flex:1;min-height:0;padding:3mm 2mm;font-size:9.5pt;line-height:1.35}
+.lp-legend-body p{margin:0 0 3mm}.lp-legend-body h2{font-size:11pt;margin:4mm 0 2mm}
+.lp-legend-body table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:9.5pt}
+.lp-legend-body th,.lp-legend-body td{border:.2mm solid #b7c1b9;padding:1.3mm 2mm;text-align:left;vertical-align:top}
+.lp-legend-body th:first-child,.lp-legend-body td:first-child{width:42mm;font-weight:700}
+.lp-legend-body .lp-classifications{width:75mm;margin-bottom:3mm}.lp-legend-body .lp-classifications td,.lp-legend-body .lp-classifications th{padding:.7mm 2mm}
