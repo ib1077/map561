@@ -321,3 +321,26 @@ body.list-mode .side-controls>:not(#homeBtn){display:none!important}
  .auto-scroll-panel button{height:32px;min-width:34px;padding:2px 5px;font-size:12px}.auto-scroll-panel button[aria-pressed=true]{background:#dcece3;border-color:#39785e}#autoStop{min-width:55px}
  .visually-hidden{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip-path:inset(50%);white-space:nowrap}
 }
+/* Ver.13.19A: return the former 32px header to the diagram. */
+@media screen{
+ body .topbar .side-controls{top:5px;bottom:5px;gap:4px;overflow-y:auto;scrollbar-width:none}
+ body .topbar .side-button{flex:none;min-height:40px;height:40px;margin:0;padding:2px 3px}
+ body .topbar .side-toggle{display:flex;align-items:center;justify-content:center;white-space:normal;line-height:1.3;font-size:11px}
+ body .topbar .side-toggle.active{background:#dcece3;border-color:#39785e;color:#184f3d}
+ body .topbar #fullscreenBtn{font-size:10px;line-height:1.3;height:34px;min-height:34px;margin-top:2px}
+ body .route-overview{top:0}body .distance-ruler{top:4px}body #railViewport{top:25px}
+ body #routeWorkspace,body.fallback-landscape #routeWorkspace,body.asset-strip-open #routeWorkspace{--plan-height:calc((100% - 25px) * .3)}
+ #accessSvg{top:25px}body .speed-overlay-tools{top:50px}
+ #quickControls{top:28px;right:4px;background:transparent;border-radius:4px;box-shadow:0 1px 5px #173b4c22}
+ body.list-mode #quickControls{top:0}
+ #scaleReadout{position:absolute;left:5px;bottom:calc(var(--plan-height,0px) + 4px);z-index:8;margin:0;padding:1px 4px;border-radius:3px;font-size:10px;line-height:1.4;color:#516864;background:#fcfcfaab;pointer-events:none}
+ #fullscreenStatus{position:absolute;right:4px;top:64px;z-index:30;max-width:min(360px,calc(100% - 12px));font-size:12px;line-height:1.5;color:#173b4c;background:#fffef3f5;border-radius:6px;box-shadow:0 1px 5px #173b4c22;padding:5px 8px}#fullscreenStatus:empty{display:none}
+ html:fullscreen{width:100%;height:100%;background:#173b4c}
+}
+@media screen and (max-height:300px) and (orientation:landscape){body .topbar .side-button{height:35px;min-height:35px}body .topbar .side-controls{gap:3px}}
+@media print{#fullscreenBtn,#fullscreenStatus,#scaleReadout{display:none!important}}
+@media screen{
+ #scaleReadout{bottom:4px}
+ body.fallback-landscape #scaleReadout,body.asset-strip-open #scaleReadout{bottom:calc(var(--plan-height) + 4px)}
+}
+@media screen and (orientation:landscape) and (max-height:700px){#scaleReadout{bottom:calc(var(--plan-height) + 4px)}}
