@@ -16,32 +16,34 @@
 <body class="launch-waiting">
   <section id="launchScreen" class="launch-screen" aria-labelledby="launchTitle">
     <div class="launch-card">
-      <header><span class="launch-mark" aria-hidden="true"></span><div><h1 id="launchTitle">智頭線 路線図</h1><p>Ver.13.15A</p></div></header>
+      <header><img class="home-app-icon" src="icon.svg" alt=""><h1 id="launchTitle">路線図<span>（構造物・速度）</span></h1><div class="home-summary">拡大・移動できます<br><span class="up-key">のぼり 赤</span> ／ <span class="down-key">くだり 青</span>で表示</div><div class="pwa-tools"><span id="appVersion">Ver.13.17A</span><button id="pwaUpdate" type="button">更新して再起動</button></div></header>
+      <p id="pwaStatus" class="pwa-status" role="status" aria-live="polite"></p>
       <div class="launch-choices">
         <button data-launch-mode="route"><strong>路線図</strong><span>勾配・構造物を表示</span></button>
         <button data-launch-mode="list"><strong>構造物一覧</strong><span>距離順の表から探す</span></button>
         <button data-launch-mode="print" class="home-print"><strong>印刷</strong><span>路線図・構造物一覧を印刷／PDF保存</span></button>
       </div>
-      <div class="launch-help"><p>指1本：移動　指2本：拡大・縮小</p><p>構造物をタップ：その場で詳細表示</p><p>速度は路線図の「速度」ボタンから</p></div>
-      <p id="launchStatus" class="launch-status">画面を選ぶとそのまま開きます</p>
+
+      <p id="launchStatus" class="launch-status">画面を選ぶとそのまま開きます</p><p class="home-note">※距離は1m単位表示／位置は目安です</p>
     </div>
   </section>
   <div class="app-shell">
     <header class="topbar">
       <div class="brand"><span class="brand-mark" aria-hidden="true"></span><strong>智頭線</strong><span id="modeTitle">路線図</span></div>
       <nav class="side-controls" aria-label="表示と操作">
-        <button id="homeBtn" class="side-button" aria-label="HOMEへ戻る"><span class="side-icon" aria-hidden="true">⌂</span><span>HOME</span></button>
+
         <button class="side-button mode-tab" data-mode="speed"><span class="side-icon" aria-hidden="true">📉</span><span>速度</span></button>
-        <button id="autoScrollBtn" class="side-button" aria-expanded="false" aria-label="オートスクロール"><span class="side-icon" aria-hidden="true">▶</span><span>自動</span></button>
+
         <button id="timeSideBtn" class="side-button" aria-label="時間計算を開く" aria-expanded="false"><span class="side-icon" aria-hidden="true">◷</span><span>時間</span></button>
         <button id="menuBtn" class="side-button side-settings" aria-label="表示設定を開く" title="設定"><span class="side-icon" aria-hidden="true">☰</span><span>設定</span></button>
       </nav>
     </header>
 
     <main class="main-stage">
+<nav id="quickControls" aria-label="HOMEと再生"><button id="homeBtn" class="side-button" aria-label="HOMEへ戻る"><span class="side-icon" aria-hidden="true">⌂</span><span>HOME</span></button><button id="autoScrollBtn" class="side-button" aria-expanded="false" aria-label="オートスクロール"><span class="side-icon" aria-hidden="true">▶</span><span>再生</span></button></nav>
 
       <section id="routeWorkspace" class="workspace" aria-label="路線図">
-        <div class="display-bar" role="group" aria-label="設備の表示切替"><button id="equipmentToggle" type="button">設備 ON</button><button id="labelToggle" type="button">ラベル ON</button><button id="displayAuto" type="button">自動</button></div>
+        <div class="display-bar" role="group" aria-label="路線図の表示切替"><button id="equipmentToggle" type="button">地上子 OFF</button><button id="labelToggle" type="button">信号名 ON</button><button id="baliseLabelToggle" type="button">地上子名 ON</button></div><svg id="accessSvg" aria-label="進入路"></svg>
         <div class="route-overview" role="img" aria-label="全線56.1kmの表示範囲"><span id="viewWindow"></span></div>
         <div id="distanceRuler" class="distance-ruler" aria-hidden="true"></div>
         <div class="status-pills"><button id="fitBtn" class="status-button">全体</button><span>1本指で縦横移動</span></div>
@@ -148,7 +150,7 @@
     <div class="settings-layer">
     <aside id="settings" class="settings" aria-label="表示設定" aria-hidden="true">
       <div class="settings-head"><div><strong>表示設定</strong><span>駅・トンネル・勾配は常に表示</span></div><button id="menuClose" class="icon-button dark" aria-label="設定を閉じる">×</button></div>
-      <div id="layerSettings" class="layer-settings"></div>
+      <button id="displayAuto" type="button" class="reset-button">縮尺に応じた自動表示へ</button><p class="display-settings-note">信号・進入路・駅・トンネル・勾配は常時表示。地上子と名称は上のバーで切り替えます。</p><div id="layerSettings" class="layer-settings"></div>
       <button id="resetLayers" class="reset-button">すべて自動に戻す</button>
     </aside>
     <button id="scrim" class="scrim hidden" aria-label="設定を閉じる"></button>
@@ -204,5 +206,6 @@
   <script src="xlsx-bridge.js"></script>
   <script src="data-manager.js"></script>
   <script src="list-print.js"></script>
+  <script src="pwa-update.js"></script>
 </body>
 </html>

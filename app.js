@@ -33,7 +33,7 @@
   const layerInfo = [
     ["curves", "曲線", "少し拡大すると表示"],
     ["signals", "信号機", "詳しく拡大すると表示"], ["balises", "地上子", "さらに拡大すると表示"],
-    ["points", "分岐器", "詳しく拡大すると表示"], ["exits", "避難口", "詳しく拡大すると表示"]
+    ["points", "分岐器", "詳しく拡大すると表示"], ["exits", "進入路", "詳しく拡大すると表示"]
   ];
   const state = {
     mode: ["route","speed","list"].includes(saved?.mode) ? saved.mode : "route",
@@ -79,31 +79,40 @@
   function autoVisible(layer){if(["stations","tunnels"].includes(layer))return true;if(["gradient","curves"].includes(layer))return state.zoom>=24;if(["signals","points","exits"].includes(layer))return state.zoom>=68;if(layer==="balises")return state.zoom>=110;return false;}
   function baseVisible(layer){if(["stations","tunnels","gradient"].includes(layer))return true;const value=state.layers[layer]||"auto";return value==="show"||(value==="auto"&&autoVisible(layer));}
   // Screen-only overrides. Print builders use the original layer rules.
-  const displayState={mode:"auto",equipment:true,labels:true};
+  const displayState={mode:"manual",balises:false,signalLabels:true,baliseLabels:true};
   function visible(layer){
-    if(["stations","tunnels","gradient"].includes(layer))return true;
-    return displayState.mode==="manual"?displayState.equipment:baseVisible(layer);
+    if(["stations","tunnels","gradient","signals","exits"].includes(layer))return true;
+    if(layer==="balises"&&displayState.mode==="manual")return displayState.balises;
+    return baseVisible(layer);
   }
-  function equipmentLabel(autoValue){return displayState.mode==="manual"?displayState.equipment&&displayState.labels:autoValue;}
-  function automaticLabels(){return layerInfo.some(([key])=>baseVisible(key)&&(key==="curves"?state.zoom>=38:key==="signals"?(lowerPanelVisible()?state.zoom>=68:state.zoom>=118||state.layers.signals==="show"):key==="balises"?(lowerPanelVisible()?state.zoom>=105:state.zoom>=180||state.layers.balises==="show"):false));}
+  function equipmentLabel(autoValue,kind="curves"){
+    if(kind==="signals")return displayState.mode==="manual"?displayState.signalLabels:autoValue;
+    if(kind==="balises")return visible("balises")&&(displayState.mode==="manual"?displayState.baliseLabels:autoValue);
+    return autoValue;
+  }
   function updateDisplayBar(){
     const manual=displayState.mode==="manual";
-    const equipment=manual?displayState.equipment:layerInfo.some(([key])=>baseVisible(key));
-    const labels=manual?displayState.labels:automaticLabels();
-    for(const [id,on,title] of [["equipmentToggle",equipment,"設備"],["labelToggle",labels,"ラベル"]]){
-      const button=$("#"+id);button.textContent=title+" "+(on?"ON":"OFF");button.classList.toggle("active",on);button.setAttribute("aria-pressed",String(on));
-      button.title=manual?"手動表示":"自動表示：種類・縮尺によって異なります";
+    for(const [id,on,title] of [["equipmentToggle",visible("balises"),"地上子"],["labelToggle",equipmentLabel(state.zoom>=68,"signals"),"信号名"],["baliseLabelToggle",manual?displayState.baliseLabels:state.zoom>=105,"地上子名"]]){
+      const button=$("#"+id);button.textContent=title+" "+(on?"ON":"OFF");button.classList.toggle("active",on);button.setAttribute("aria-pressed",String(on));button.title=manual?"手動表示（ズームしても維持）":"自動表示：縮尺によって変わります";
     }
-    const button=$("#displayAuto");button.textContent=manual?"手動 → 自動":"自動";button.classList.toggle("active",!manual);button.setAttribute("aria-pressed",String(!manual));
+    const button=$("#displayAuto");button.textContent=manual?"縮尺に応じた自動表示へ":"自動表示中（縮尺連動）";button.setAttribute("aria-pressed",String(!manual));
   }
   function setDisplayOption(key){
-    if(displayState.mode==="auto"){
-      displayState.equipment=layerInfo.some(([layer])=>baseVisible(layer));
-      displayState.labels=automaticLabels();
-    }
+    if(displayState.mode==="auto"){displayState.balises=visible("balises");displayState.signalLabels=state.zoom>=68;displayState.baliseLabels=state.zoom>=105;}
     displayState.mode="manual";displayState[key]=!displayState[key];
-    if(!displayState.equipment){state.selected=null;closeInfo();}
+    if(key==="balises"&&!displayState.balises){state.selected=null;closeInfo();}
     renderRoute();
+  }
+  function renderAccess(){
+    const width=routeViewport.clientWidth;
+    $("#accessSvg").setAttribute("viewBox",`0 0 ${width} 20`);
+    $("#accessSvg").innerHTML=D.exits.map(e=>{const xx=x(e.km)-routeViewport.scrollLeft;if(xx<0||xx>width)return '';return `<g ${attrs("進入路",e.name||"進入路",e.km,kmText(e.km),"")}><rect class="access-hit" x="${xx-10}" y="0" width="20" height="20" fill="transparent"/><path d="M${xx-4} 3H${xx+4}V10H${xx}V16" fill="#f2df94" stroke="#b7a052" stroke-width="1.2"/></g>`;}).join('');
+  }
+  function positionRouteStart(){
+    if(!isSplitLayout())return restoreRouteY(.55);
+    const height=Number(routeSvg.getAttribute("height")),top=parseFloat(routeSvg.style.top)||0;
+    routeViewport.scrollTop=Math.max(0,Math.min(routeViewport.scrollHeight-routeViewport.clientHeight,top+routeY(interpolateY(0),height)-routeViewport.clientHeight*.65));
+    state.routeYRatio=routeRatio();
   }
   function attrs(type,name,km,detail="",relation=""){return `class="clickable" tabindex="0" role="button" data-type="${escapeHtml(type)}" data-name="${escapeHtml(name)}" data-km="${km}" data-detail="${escapeHtml(detail)}" data-relation="${escapeHtml(relation)}"`;}
 
@@ -111,7 +120,7 @@
   function stripVisible(row){if(row.category==="信号機")return visible("signals");if(row.category.includes("地上子"))return visible("balises");return false;}
   function stripLabel(row){if(row.category==="信号機")return assetText(row.supplementalB||row.attribute);if(row.category.includes("地上子"))return assetText(row.supplementalB||row.type3||row.type2);return assetText(row.categoryName||row.attribute);}
   function baseStripLabelVisible(row){return row.category==="信号機"?state.zoom>=68:row.category==="無電源地上子"?state.zoom>=180:state.zoom>=105;}
-  function stripLabelVisible(row){return equipmentLabel(baseStripLabelVisible(row));}
+  function stripLabelVisible(row){return equipmentLabel(baseStripLabelVisible(row),row.category==="信号機"?"signals":"balises");}
   function printStripVisible(row){if(row.category==="信号機")return baseVisible("signals");if(row.category.includes("地上子"))return baseVisible("balises");return false;}
   function renderAssetStrip(){
     if(!lowerPanelVisible()){stripHits=[];return;}
@@ -123,8 +132,8 @@
     const rulerStep=state.zoom<25?5:state.zoom<55?1:.5;ctx.fillStyle="#55645e";ctx.font="700 10px sans-serif";ctx.textAlign="center";for(let km=Math.ceil(Math.max(0,left)/rulerStep)*rulerStep;km<=Math.min(TOTAL,right);km+=rulerStep){const whole=Number.isInteger(km);ctx.fillText(whole?`${km}k`:'1/2',sx(km),12);}ctx.textAlign="start";
     if(visible("curves"))for(const curve of curveSpans){if(curve.end<left||curve.start>right)continue;const x1=sx(curve.start),x2=sx(curve.end),yy=equipmentY+(curve.direction===-1?-1:1)*Math.min(28,Math.max(18,plotHeight/2-9));ctx.strokeStyle="#edc48d";ctx.lineWidth=2.5;ctx.lineCap="butt";ctx.beginPath();ctx.moveTo(x1,yy);ctx.lineTo(x2,yy);ctx.stroke();if(curve.radius&&equipmentLabel(state.zoom>=38)){const label=String(curve.radius);ctx.font="700 10px sans-serif";const labelX=(x1+x2)/2-ctx.measureText(label).width/2;ctx.strokeStyle="#fcfcfa";ctx.lineWidth=3;ctx.strokeText(label,labelX,yy+3.5);ctx.fillStyle="#704318";ctx.fillText(label,labelX,yy+3.5);}stripHits.push({kind:"span",x1,x2,y:yy,km:curve.start,type:"曲線",name:curve.radius?`R${curve.radius}`:"曲線区間",detail:`${assetKmText(curve.start)} — ${assetKmText(curve.end)}`,relation:`延長 ${Math.round((curve.end-curve.start)*1000)}m`});}
     ctx.strokeStyle="#c2c8c5";ctx.lineWidth=8;ctx.lineCap="butt";ctx.beginPath();ctx.moveTo(0,equipmentY);ctx.lineTo(width,equipmentY);ctx.stroke();
-    if(visible("tunnels"))for(const tunnel of D.tunnels){if(tunnel.end<left||tunnel.start>right)continue;const x1=sx(tunnel.start),x2=sx(tunnel.end);ctx.strokeStyle="#7c8983";ctx.lineWidth=12;ctx.lineCap="round";ctx.beginPath();ctx.moveTo(x1,equipmentY);ctx.lineTo(Math.max(x1+2,x2),equipmentY);ctx.stroke();if(state.zoom>=55){ctx.fillStyle="#4e5d56";ctx.font="700 12px sans-serif";ctx.fillText(tunnel.name,(x1+x2)/2+4,equipmentY-15);}for(const [km,edge] of [[tunnel.start,"始点"],[tunnel.end,"終点"]])stripHits.push({kind:"point",x:sx(km),y:equipmentY,km,type:"トンネル"+edge,name:structureName(tunnel)+" "+edge,detail:`${assetKmText(tunnel.start)} — ${assetKmText(tunnel.end)}`,relation:`延長 ${Math.round((tunnel.end-tunnel.start)*1000)}m`});}
-    for(const row of ASSETS){if(row.distanceKm<left)continue;if(row.distanceKm>right)break;if(!stripVisible(row))continue;const xx=sx(row.distanceKm),yy=planEquipmentY(equipmentY,row.categoryName,row.category==="無電源地上子"),selected=row.id===state.selectedAssetId,directional=row.category==="信号機"||row.category.includes("地上子"),up=directional&&row.categoryName==="上り",down=directional&&row.categoryName==="下り",markColor=row.category==="無電源地上子"?(state.zoom>=180?"#8b9590":"#bac0bc"):up?"#a4322f":down?"#26678e":"#59635f",relaySignal=row.category==="信号機"&&row.attribute==="中継";ctx.lineWidth=relaySignal?1.05:1.1;ctx.strokeStyle=markColor;ctx.fillStyle=markColor;ctx.beginPath();if(row.category==="信号機"){ctx.arc(xx,yy,selected?4.5:3.4,0,Math.PI*2);ctx.fillStyle=relaySignal?"#fcfcfa":markColor;ctx.fill();ctx.stroke();}else if(row.category==="無電源地上子"){const size=selected?6:state.zoom>=180?5:3;ctx.rect(xx-size/2,yy-1,size,2);ctx.fill();}else{const size=selected?3.2:2.2;ctx.rect(xx-size,yy-size,size*2,size*2);ctx.fill();}if(selected){ctx.beginPath();ctx.arc(xx,yy,6,0,Math.PI*2);ctx.strokeStyle="#d18d20";ctx.lineWidth=1.3;ctx.stroke();}const label=stripLabel(row);if(label&&stripLabelVisible(row)){ctx.fillStyle=markColor;ctx.font=row.category==="無電源地上子"?"400 9px sans-serif":"700 9px sans-serif";ctx.fillText(label,xx+4,row.category==="無電源地上子"?yy+14:up?yy+14:yy-7);}stripHits.push({kind:"point",x:xx,y:yy,row});}
+    if(visible("tunnels"))for(const tunnel of D.tunnels){if(tunnel.end<left||tunnel.start>right)continue;const x1=sx(tunnel.start),x2=sx(tunnel.end);ctx.strokeStyle="#7c8983";ctx.lineWidth=12;ctx.lineCap="round";ctx.beginPath();ctx.moveTo(x1,equipmentY);ctx.lineTo(Math.max(x1+2,x2),equipmentY);ctx.stroke();{ctx.fillStyle="#4e5d56";ctx.font="700 12px sans-serif";ctx.fillText(tunnel.name,(x1+x2)/2+4,equipmentY-15);}for(const [km,edge] of [[tunnel.start,"始点"],[tunnel.end,"終点"]])stripHits.push({kind:"point",x:sx(km),y:equipmentY,km,type:"トンネル"+edge,name:structureName(tunnel)+" "+edge,detail:`${assetKmText(tunnel.start)} — ${assetKmText(tunnel.end)}`,relation:`延長 ${Math.round((tunnel.end-tunnel.start)*1000)}m`});}
+    for(const row of ASSETS){if(row.distanceKm<left)continue;if(row.distanceKm>right)break;if(!stripVisible(row))continue;const xx=sx(row.distanceKm),yy=planEquipmentY(equipmentY,row.categoryName,row.category==="無電源地上子"),selected=row.id===state.selectedAssetId,directional=row.category==="信号機"||row.category.includes("地上子"),up=directional&&row.categoryName==="上り",down=directional&&row.categoryName==="下り",markColor=row.category==="無電源地上子"?"#8254a0":up?"#a4322f":down?"#26678e":"#59635f",relaySignal=row.category==="信号機"&&row.attribute==="中継";ctx.lineWidth=relaySignal?1.05:1.1;ctx.strokeStyle=markColor;ctx.fillStyle=markColor;ctx.beginPath();if(row.category==="信号機"){ctx.arc(xx,yy,selected?4.5:3.4,0,Math.PI*2);ctx.fillStyle=relaySignal?"#fcfcfa":markColor;ctx.fill();ctx.stroke();}else if(row.category==="無電源地上子"){const size=selected?9:7;ctx.rect(xx-size/2,yy-2,size,4);ctx.fill();}else{const size=selected?3.2:2.2;ctx.rect(xx-size,yy-size,size*2,size*2);ctx.fill();}if(selected){ctx.beginPath();ctx.arc(xx,yy,6,0,Math.PI*2);ctx.strokeStyle="#d18d20";ctx.lineWidth=1.3;ctx.stroke();}const label=stripLabel(row);if(label&&stripLabelVisible(row)){ctx.fillStyle=markColor;ctx.font=row.category==="無電源地上子"?"400 9px sans-serif":"700 9px sans-serif";ctx.fillText(label,xx+4,row.category==="無電源地上子"?yy+14:up?yy+14:yy-7);}stripHits.push({kind:"point",x:xx,y:yy,row});}
     if(visible("points"))for(const point of D.points){if(point.km<left||point.km>right)continue;const xx=sx(point.km),size=3.5;ctx.beginPath();ctx.moveTo(xx,equipmentY-size);ctx.lineTo(xx+size,equipmentY+size);ctx.lineTo(xx-size,equipmentY+size);ctx.closePath();ctx.fillStyle="#6d5c8e";ctx.fill();stripHits.push({kind:"point",x:xx,y:equipmentY,km:point.km,type:"分岐器",name:`${point.name} 分岐器`,detail:assetKmText(point.km),relation:point.direction||""});}
     if(state.selected){const xx=sx(state.selected.km);if(xx>=0&&xx<=width){ctx.strokeStyle="#d18d20";ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(xx,0);ctx.lineTo(xx,height);ctx.stroke();}}
   }
@@ -139,16 +148,16 @@
     const step=state.zoom<16?5:state.zoom<55?1:.1;
     for(let km=0;km<=TOTAL+.0001;km+=step){const n=Math.round(km*10)/10,whole=Math.abs(n-Math.round(n))<.001;out+=`<line class="rail-grid${whole?" major":""}" x1="${x(n)}" y1="22" x2="${x(n)}" y2="${height-28}"/>`;}
     if(state.mode==="speed")for(const v of [40,80,120]){const yy=speedY(v,height);out+=`<line class="speed-overlay-guide" x1="${PAD}" y1="${yy}" x2="${width-PAD}" y2="${yy}"/>`;for(let km=0;km<=TOTAL;km+=10)out+=`<text class="speed-overlay-label" x="${x(km)+3}" y="${yy-3}">${v}</text>`;}
-    if(visible("tunnels"))for(const t of D.tunnels){const start=Math.max(0,t.start),end=Math.min(TOTAL,t.end);if(end<=0||start>=TOTAL)continue;out+=`<g class="tunnel-decoration" pointer-events="none"><path class="tunnel-line" d="${routePath(pointsBetween(start,end),height)}"/>`;const pixels=(end-start)*state.zoom;if(state.zoom>=19||pixels>=31){const mid=(start+end)/2;out+=`<text class="tunnel-name" x="${x(mid)}" y="${routeY(interpolateY(mid),height)-9}" text-anchor="middle">${escapeHtml(t.name)}</text>`;}out+=`</g>`;for(const [km,edge] of [[t.start,"始点"],[t.end,"終点"]]){if(km<0||km>TOTAL)continue;out+=`<g ${attrs("トンネル"+edge,structureName(t)+" "+edge,km,kmText(km),"トンネル"+edge)}><circle cx="${x(km)}" cy="${routeY(interpolateY(km),height)}" r="8" fill="transparent" pointer-events="all"/></g>`;}}
+    if(visible("tunnels"))for(const t of D.tunnels){const start=Math.max(0,t.start),end=Math.min(TOTAL,t.end);if(end<=0||start>=TOTAL)continue;out+=`<g class="tunnel-decoration" pointer-events="none"><path class="tunnel-line" d="${routePath(pointsBetween(start,end),height)}"/>`;const pixels=(end-start)*state.zoom;{const mid=(start+end)/2;out+=`<text class="tunnel-name" x="${x(mid)}" y="${routeY(interpolateY(mid),height)-9}" text-anchor="middle">${escapeHtml(t.name)}</text>`;}out+=`</g>`;for(const [km,edge] of [[t.start,"始点"],[t.end,"終点"]]){if(km<0||km>TOTAL)continue;out+=`<g ${attrs("トンネル"+edge,structureName(t)+" "+edge,km,kmText(km),"トンネル"+edge)}><circle cx="${x(km)}" cy="${routeY(interpolateY(km),height)}" r="8" fill="transparent" pointer-events="all"/></g>`;}}
     out+=`<path class="route-line" d="${routePath(D.gradient.filter(p=>p.km>=0&&p.km<=TOTAL),height)}"/>`;
     if(state.mode==="speed"){const selected=new Set(state.speedDirections);for(const dir of ["up","down"])if(selected.has(dir)){const pts=speedPoints(),path=pts.map((p,i)=>`${i?"L":"M"}${x(p.km).toFixed(1)} ${speedY(p[dir],height).toFixed(1)}`).join(" ");out+=`<path class="speed-line-halo" d="${path}"/><path class="speed-line-${dir}" d="${path}"/>`;if(state.zoom>=70)for(const p of pts.filter(p=>Math.abs((p.km/2)-Math.round(p.km/2))<.001)){const yy=speedY(p[dir],height),dy=dir==="up"?-7:14;out+=`<text class="speed-value speed-value-${dir}" x="${x(p.km)+4}" y="${yy+dy}">${p[dir]}</text>`;}}}
     if(visible("gradient"))for(const p of D.gradient.filter(p=>p.km>=0&&p.km<=TOTAL)){const yy=routeY(p.y,height),label=`${p.permille>0?"+":""}${p.permille}‰`;out+=`<g ${attrs("勾配",label,p.km,`${kmText(p.km)}から`,"勾配変化点")}><circle cx="${x(p.km)}" cy="${yy}" r="3.4" fill="#315666"/><text class="gradient-label" x="${x(p.km)+5}" y="${yy-7}">${label}</text></g>`;}
     if(!split&&visible("curves")){const baseY=height-35;for(const c of curveSpans){out+=`<g ${attrs("曲線",c.radius?`R${c.radius}`:"曲線区間",c.start,`${kmText(c.start)} — ${kmText(c.end)}`,`延長 ${Math.round((c.end-c.start)*1000)}m`)}><path class="curve-mark" d="M${x(c.start)} ${baseY-8}V${baseY}H${x(c.end)}V${baseY-8}"/>`;if(equipmentLabel(state.zoom>=38)&&c.radius)out+=`<text class="curve-label" x="${x((c.start+c.end)/2)}" y="${baseY-4}" text-anchor="middle">R${c.radius}</text>`;out+=`</g>`;}}
     if(visible("stations"))for(const s of D.stations){const yy=routeY(interpolateY(s.km),height),labelY=Math.max(32,yy-72);out+=`<g ${attrs("駅",`${s.name}駅`,s.km,kmText(s.km),"")}><line class="station-guide" x1="${x(s.km)}" y1="${labelY+5}" x2="${x(s.km)}" y2="${yy+18}"/><text class="station-name route-station-name" x="${x(s.km)+5}" y="${labelY}">${escapeHtml(s.name)}</text></g>`;}
-    if(visible("signals"))for(const s of D.signals){const lineY=routeY(interpolateY(s.km),height),offset=split?(s.direction==="上り"?-19:-33):(s.direction==="上り"?-18:18),yy=lineY+offset,css=`${s.direction==="上り"?"signal-up":"signal-down"}${s.kind==="中継"?" signal-relay":""}`,title=`${s.direction} ${s.kind}信号機 ${s.code||""}`.trim(),labelY=split?yy-6:(s.direction==="上り"?yy-7:yy+14),radius=split?3.2:5;out+=`<g ${attrs("信号機",title,s.km,kmText(s.km),`${s.direction}／${s.kind}`)}><line class="facility-stem" x1="${x(s.km)}" y1="${lineY}" x2="${x(s.km)}" y2="${yy}"/><circle class="${css}" cx="${x(s.km)}" cy="${yy}" r="${radius}"/>`;if(s.kind!=="中継"&&equipmentLabel(state.zoom>=118||state.layers.signals==="show"))out+=`<text class="facility-label" fill="${s.direction==="上り"?"#a72e2a":"#155f99"}" x="${x(s.km)+5}" y="${labelY}">${escapeHtml(s.kind)}</text>`;out+=`</g>`;}
-    if(!split&&visible("balises")){for(const b of D.poweredBalises){const lineY=routeY(interpolateY(b.km),height),offset=b.direction==="上り"?-31:31,yy=lineY+offset,css=b.direction==="上り"?"balise-up":"balise-down",target=String(b.code||"").split("-")[0],relation=b.distance?`制御対象 ${target}／信号まで ${b.distance}m`:"有電源地上子",labelY=b.direction==="上り"?yy-7:yy+15;out+=`<g ${attrs("有電源地上子",`${b.direction} ${b.code||""}`,b.km,kmText(b.km),relation)}><line class="facility-stem" x1="${x(b.km)}" y1="${lineY}" x2="${x(b.km)}" y2="${yy}"/><rect class="${css}" x="${x(b.km)-4.5}" y="${yy-4.5}" width="9" height="9" transform="rotate(45 ${x(b.km)} ${yy})"/>`;if(equipmentLabel(state.zoom>=180||state.layers.balises==="show"))out+=`<text class="facility-label" fill="${b.direction==="上り"?"#a72e2a":"#155f99"}" x="${x(b.km)+8}" y="${labelY}">${escapeHtml(b.code||"")}</text>`;out+=`</g>`;}for(const b of D.passiveBalises){const lineY=routeY(interpolateY(b.km),height),yy=lineY+43;out+=`<g ${attrs("無電源地上子",b.code||"無電源地上子",b.km,kmText(b.km),b.value?`設定 ${b.value}`:"")}><line class="facility-stem" x1="${x(b.km)}" y1="${lineY}" x2="${x(b.km)}" y2="${yy}"/><rect class="balise-passive" x="${x(b.km)-6}" y="${yy-2.5}" width="12" height="5" rx="1.5"/>`;if(equipmentLabel(state.zoom>=180||state.layers.balises==="show"))out+=`<text class="facility-label" fill="#414b4f" x="${x(b.km)+8}" y="${yy+4}">${escapeHtml(b.code||"")}</text>`;out+=`</g>`;}}
+    if(visible("signals"))for(const s of D.signals){const lineY=routeY(interpolateY(s.km),height),offset=split?(s.direction==="上り"?-19:-33):(s.direction==="上り"?-18:18),yy=lineY+offset,css=`${s.direction==="上り"?"signal-up":"signal-down"}${s.kind==="中継"?" signal-relay":""}`,title=`${s.direction} ${s.kind}信号機 ${s.code||""}`.trim(),labelY=split?yy-6:(s.direction==="上り"?yy-7:yy+14),radius=split?3.2:5;out+=`<g ${attrs("信号機",title,s.km,kmText(s.km),`${s.direction}／${s.kind}`)}><line class="facility-stem" x1="${x(s.km)}" y1="${lineY}" x2="${x(s.km)}" y2="${yy}"/><circle class="${css}" cx="${x(s.km)}" cy="${yy}" r="${radius}"/>`;if(equipmentLabel(state.zoom>=118||state.layers.signals==="show","signals"))out+=`<text class="facility-label" fill="${s.direction==="上り"?"#a72e2a":"#155f99"}" x="${x(s.km)+5}" y="${labelY}">${escapeHtml(s.code||s.kind)}</text>`;out+=`</g>`;}
+    if(!split&&visible("balises")){for(const b of D.poweredBalises){const lineY=routeY(interpolateY(b.km),height),offset=b.direction==="上り"?-31:31,yy=lineY+offset,css=b.direction==="上り"?"balise-up":"balise-down",target=String(b.code||"").split("-")[0],relation=b.distance?`制御対象 ${target}／信号まで ${b.distance}m`:"有電源地上子",labelY=b.direction==="上り"?yy-7:yy+15;out+=`<g ${attrs("有電源地上子",`${b.direction} ${b.code||""}`,b.km,kmText(b.km),relation)}><line class="facility-stem" x1="${x(b.km)}" y1="${lineY}" x2="${x(b.km)}" y2="${yy}"/><rect class="${css}" x="${x(b.km)-4.5}" y="${yy-4.5}" width="9" height="9" transform="rotate(45 ${x(b.km)} ${yy})"/>`;if(equipmentLabel(state.zoom>=180||state.layers.balises==="show","balises"))out+=`<text class="facility-label" fill="${b.direction==="上り"?"#a72e2a":"#155f99"}" x="${x(b.km)+8}" y="${labelY}">${escapeHtml(b.code||"")}</text>`;out+=`</g>`;}for(const b of D.passiveBalises){const lineY=routeY(interpolateY(b.km),height),yy=lineY+43;out+=`<g ${attrs("無電源地上子",b.code||"無電源地上子",b.km,kmText(b.km),b.value?`設定 ${b.value}`:"")}><line class="facility-stem" x1="${x(b.km)}" y1="${lineY}" x2="${x(b.km)}" y2="${yy}"/><rect class="balise-passive" x="${x(b.km)-7}" y="${yy-3}" width="14" height="6" rx="1.5"/>`;if(equipmentLabel(state.zoom>=180||state.layers.balises==="show","balises"))out+=`<text class="facility-label" fill="#414b4f" x="${x(b.km)+8}" y="${yy+4}">${escapeHtml(b.code||"")}</text>`;out+=`</g>`;}}
     if(!split&&visible("points"))for(const p of D.points){const yy=routeY(interpolateY(p.km),height);out+=`<g ${attrs("分岐器",`${p.name} 分岐器`,p.km,kmText(p.km),p.direction||"")}><path class="point-mark" d="M${x(p.km)-5} ${yy+7}l5 -10 5 10z"/></g>`;}
-    if(visible("exits"))for(const e of D.exits){const yy=routeY(interpolateY(e.km),height);out+=`<g ${attrs("避難口",e.name||"避難口",e.km,kmText(e.km),"")}><rect class="exit-mark" x="${x(e.km)-4}" y="${yy-4}" width="8" height="8"/></g>`;}
+
     if(state.selected)out+=`<line class="selected-guide" x1="${x(state.selected.km)}" y1="24" x2="${x(state.selected.km)}" y2="${height-24}"/>`;
     routeSvg.innerHTML=out+(speedEditor?.draw()||'');renderAssetStrip();updateStageLabel();updateDisplayBar();
   }
@@ -318,6 +327,7 @@
   function routeRatio(){if(!routeViewport.clientHeight)return state.routeYRatio;const max=routeViewport.scrollHeight-routeViewport.clientHeight;return max>0?routeViewport.scrollTop/max:.5;}
   function updateNavigator(){const start=Math.max(0,Math.min(TOTAL,(routeViewport.scrollLeft-PAD)/state.zoom)),end=Math.max(start,Math.min(TOTAL,(routeViewport.scrollLeft+routeViewport.clientWidth-PAD)/state.zoom)),bar=$("#viewWindow");bar.style.left=(start/TOTAL*100)+"%";bar.style.width=((end-start)/TOTAL*100)+"%";bar.parentElement.setAttribute("aria-label",`全線56.1kmのうち ${kmText(start)}から${kmText(end)}を表示`);}
   function updateDistanceRuler(){
+    renderAccess();
     if(!distanceRuler)return;
     const left=Math.max(0,(routeViewport.scrollLeft-PAD)/state.zoom),right=Math.min(TOTAL,(routeViewport.scrollLeft+routeViewport.clientWidth-PAD)/state.zoom);
     const first=Math.ceil(left*2-.0001)/2,labels=[];
@@ -332,7 +342,7 @@
   function restoreRouteY(ratio=state.routeYRatio){const max=routeViewport.scrollHeight-routeViewport.clientHeight;routeViewport.scrollTop=Math.max(0,Math.min(max,max*ratio));updateDistanceRuler();}
   function setZoom(next,km=center()){const yRatio=routeRatio();state.zoom=Math.max(fitZoom(),Math.min(600,next));renderRoute();renderSpeed();requestAnimationFrame(()=>{scrollCenter(km,true);restoreRouteY(yRatio);save();});}
   function fitAll(){state.routeYRatio=.5;setZoom(fitZoom(),TOTAL/2);requestAnimationFrame(()=>requestAnimationFrame(()=>{restoreRouteY(.5);save();}));}
-  function resetRouteStart(){state.zoom=72;state.centerKm=0;state.routeYRatio=.55;setMode("route",0);requestAnimationFrame(()=>requestAnimationFrame(()=>{renderRoute();renderSpeed();scrollCenter(0,true);restoreRouteY(.55);save();}));}
+  function resetRouteStart(){state.zoom=72;state.centerKm=0;state.routeYRatio=.55;setMode("route",0);requestAnimationFrame(()=>requestAnimationFrame(()=>{renderRoute();renderSpeed();scrollCenter(0,true);positionRouteStart();save();}));}
   function showItem(target,event){const g=target.closest("[data-name]");if(g){const km=Number(g.dataset.km),linked=assetForType(g.dataset.type,km);if(linked){showAssetCard(linked);return;}state.selected={km};$("#infoName").textContent=g.dataset.name;$("#infoKm").textContent=kmText(km);$("#infoType").textContent=g.dataset.type+(g.dataset.detail?`　${g.dataset.detail}`:"");$("#infoRelation").textContent=g.dataset.relation||"一覧に対応する行がないため、位置情報を表示しています";updateDetailDock(g.dataset.name,kmText(km));}else{if(state.mode!=="speed"||!event)return;const rect=routeViewport.getBoundingClientRect(),km=Math.max(0,Math.min(TOTAL,(routeViewport.scrollLeft+event.clientX-rect.left-PAD)/state.zoom)),points=speedPoints(),p=points.reduce((best,item)=>Math.abs(item.km-km)<Math.abs(best.km-km)?item:best,points[0]);state.selected={km:p.km};$("#infoName").textContent=`${trainLabel()} 速度`;$("#infoKm").textContent=kmText(p.km);$("#infoType").textContent=`上り ${p.up} km/h　下り ${p.down} km/h`;$("#infoRelation").textContent="赤：上り　青：下り";updateDetailDock(`${trainLabel()} 速度`,kmText(p.km));}renderRoute();}
   function closeInfo(){state.selected=null;$("#infoName").textContent="詳細情報";$("#infoKm").textContent="速度線などを選択してください";$("#infoType").textContent="構造物をタップすると詳細を表示";$("#infoRelation").textContent="";$("#dockDetailHint").textContent="選択なし";$("#detailDockBtn").classList.remove("has-data");setDetailPanel(false);renderRoute();}
   function buildSettings(){const names={auto:"自動",show:"表示",hide:"非表示"};$("#layerSettings").innerHTML=layerInfo.map(([key,label,desc])=>`<button class="layer-choice" data-layer="${key}" data-value="${state.layers[key]||'auto'}" title="${desc}／押すたびに自動・表示・非表示を切替" aria-label="${label}：${names[state.layers[key]||'auto']}。押すと切替"><strong>${label}</strong><span>${names[state.layers[key]||'auto']}</span></button>`).join("");$$('.layer-choice').forEach(button=>button.addEventListener('click',()=>{const key=button.dataset.layer,values=['auto','show','hide'];state.layers[key]=values[(values.indexOf(state.layers[key]||'auto')+1)%3];buildSettings();$(".layer-choice[data-layer="+key+"]").focus({preventScroll:true});renderRoute();save();}));}
@@ -366,11 +376,12 @@
     const home=$("#launchScreen"),status=$("#launchStatus");if(home.classList.contains("turning"))return;
     home.classList.add("turning");status.textContent="画面を開いています…";$$('[data-launch-mode]').forEach(b=>b.disabled=true);
     await prepareLandscapeForLaunch();
+    const initialEntry=!hasEntered;
     if(!hasEntered){state.zoom=72;state.centerKm=0;state.routeYRatio=.55;}
     const target=mode==='print'?(state.mode==='list'?'route':state.mode):mode;
     const km=state.centerKm;setMode(target,km);hasEntered=true;
     document.body.classList.remove("launch-waiting");home.classList.add("closed");home.classList.remove("turning");$$('[data-launch-mode]').forEach(b=>b.disabled=false);
-    requestAnimationFrame(()=>{renderRoute();if(target!=='list'){scrollCenter(km,true);restoreRouteY();}save();});
+    requestAnimationFrame(()=>{renderRoute();if(target!=='list'){scrollCenter(km,true);if(initialEntry)positionRouteStart();else restoreRouteY();}save();});
     setTimeout(()=>{if(home.classList.contains('closed'))home.classList.add('hidden');},220);
     if(mode==='print'){printFromHome=true;openPrintDialog(true);}
   }
@@ -404,8 +415,9 @@
 
   setAssetStripOpen(state.assetStripOpen,false);buildSettings();
   $$('[data-launch-mode]').forEach(button=>button.addEventListener("click",()=>launchApp(button.dataset.launchMode)));
-  $("#equipmentToggle").addEventListener("click",()=>setDisplayOption("equipment"));
-  $("#labelToggle").addEventListener("click",()=>setDisplayOption("labels"));
+  $("#equipmentToggle").addEventListener("click",()=>setDisplayOption("balises"));
+  $("#labelToggle").addEventListener("click",()=>setDisplayOption("signalLabels"));
+  $("#baliseLabelToggle").addEventListener("click",()=>setDisplayOption("baliseLabels"));
   $("#displayAuto").addEventListener("click",()=>{displayState.mode="auto";renderRoute();});
   $("#menuBtn").addEventListener("click",()=>openSettings(true));$("#menuClose").addEventListener("click",()=>openSettings(false));$("#scrim").addEventListener("click",()=>openSettings(false));$("#homeBtn").addEventListener("click",goHome);
   $("#resetLayers").addEventListener("click",()=>{displayState.mode="auto";state.layers=Object.fromEntries(layerInfo.map(([key])=>[key,"auto"]));buildSettings();renderRoute();save();toast("すべて自動に戻しました");});
@@ -429,12 +441,13 @@
   for(const id of ["#startKm","#startM","#endKm","#endM"])$(id).addEventListener("change",updateDistanceTime);
   $("#trainSelect").addEventListener("change",event=>selectTrain(event.target.value));
   $$(".mode-tab").forEach(b=>b.addEventListener("click",()=>{if(b.dataset.mode==="route"){resetRouteStart();return;}if(b.dataset.mode==="speed"){const next=state.mode==="speed"?"route":"speed";if(next==="speed"&&!state.speedDirections.length){state.speedDirections=["up"];$$('[data-speed]').forEach(i=>i.checked=i.dataset.speed==="up");}setMode(next);updatePrintCalculationToggle();return;}setMode(b.dataset.mode);}));$$('[data-speed]').forEach(i=>{i.checked=state.speedDirections.includes(i.dataset.speed);i.addEventListener("change",()=>{state.speedDirections=$$('[data-speed]:checked').map(item=>item.dataset.speed);updatePrintCalculationToggle();renderRoute();renderSpeed();save();});});
+  $("#accessSvg").addEventListener("click",e=>showItem(e.target,e));$("#accessSvg").addEventListener("keydown",e=>{if(["Enter"," "].includes(e.key))showItem(e.target,e);});
   routeSvg.addEventListener("click",e=>showItem(e.target,e));routeSvg.addEventListener("keydown",e=>{if(["Enter"," "].includes(e.key))showItem(e.target,e);});
   routeViewport.addEventListener("scroll",queueStripRender,{passive:true});
   document.addEventListener("contextmenu",e=>{if(!e.target.matches("input,textarea"))e.preventDefault();});document.addEventListener("dragstart",e=>e.preventDefault());
   gestures(routeViewport);gestures(routeViewport,true);renderAssetTable();updateAssetSelection();
   window.addEventListener("resize",()=>{const km=center(),yRatio=routeRatio();renderRoute();renderSpeed();requestAnimationFrame(()=>{scrollCenter(km,true);restoreRouteY(yRatio);});});
   window.CHIZU_APP_DATA_API={getProfiles:()=>SPEED_PROFILES,prepare:()=>{autoScroll?.close();speedEditor?.close();routeMotion.reset();}};
-  if("serviceWorker" in navigator)window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js"));
+
   requestAnimationFrame(()=>{state.zoom=state.zoom===null?fitZoom():Math.max(fitZoom(),Math.min(600,state.zoom));buildTimeControls();buildPrintControls();renderRoute();renderSpeed();setMode(state.mode);requestAnimationFrame(()=>{scrollCenter(saved?state.centerKm:TOTAL/2,true);restoreRouteY();});});
 })();

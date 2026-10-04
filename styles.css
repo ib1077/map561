@@ -270,3 +270,39 @@ body.list-mode .side-controls>:not(#homeBtn){display:none!important}
 .data-card header{display:flex;align-items:center;justify-content:space-between;gap:12px}.data-card h2{margin:0;font-size:22px}.data-card button{min-height:42px;padding:8px 15px;border:1px solid #94aaa0;border-radius:6px;background:#edf4ef;color:#234c3a;font:inherit;font-weight:700;cursor:pointer}.data-card button:disabled{opacity:.45;cursor:default}.data-actions{display:flex;flex-wrap:wrap;gap:10px;margin:16px 0}.data-apply,.data-restore{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin:16px 0}.data-apply button{background:#1c5b44;color:#fff}.data-apply span,.data-restore span{flex:1;min-width:230px}.data-card table{border-collapse:collapse;width:min(100%,580px)}.data-card th,.data-card td{text-align:left;border-bottom:1px solid #d6dfd8;padding:4px 10px}.data-card td:last-child{font-variant-numeric:tabular-nums}.data-messages{margin-top:12px}.data-messages.error{color:#942d32}.data-messages.warning{color:#725922}.data-messages ul{padding-left:24px}.data-note{color:#596b62}.home-data{text-align:left}
 @media(max-width:620px){#dataManager{padding:8px}.data-card{padding:12px;font-size:13px}}
 @media print{#dataManager{display:none!important}}
+
+/* HOME: infrequent update action, separated from main choices */
+.launch-card header .pwa-tools{margin-left:auto;display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0}
+.pwa-tools span{font-size:11px;color:#526774}.pwa-tools button{font:inherit;font-size:11px;min-height:32px;padding:5px 9px;border:1px solid #8fa3aa;border-radius:7px;background:#f3f7f7;color:#173b4c;cursor:pointer}.pwa-tools button:disabled{opacity:.6;cursor:default}
+.launch-card .pwa-status{grid-column:1/-1;font-size:11px;line-height:1.4;margin:0;color:#526774;overflow-wrap:anywhere}
+.launch-card .launch-help{grid-row:3}.pwa-status:empty{display:none}
+@media(max-width:380px) and (pointer:fine){.launch-card h1{font-size:16px}.launch-card header{gap:6px}.launch-mark{display:none}}
+.launch-card header{grid-row:1}.launch-card .pwa-status{grid-row:2}.launch-card .launch-choices{grid-column:1;grid-row:3}.launch-card .launch-status{grid-row:4}
+/* Ver.13.17A prototype — screen only; print geometry remains unchanged. */
+@media screen{
+ .launch-card{width:min(920px,calc(100% - 24px));max-height:calc(100% - 16px);padding:12px 16px;gap:6px;grid-template-columns:1fr;overflow:auto}
+ .launch-card header{gap:12px;grid-row:1;align-items:center;padding-bottom:8px}
+ .home-app-icon{width:44px;height:44px;border-radius:10px;flex:none}.launch-card h1{font-size:24px;white-space:nowrap}.launch-card h1 span{display:block;font-size:13px;margin-top:3px}
+ .home-summary{margin-left:auto;color:#49636a;font-size:12px;line-height:1.7;white-space:nowrap}.up-key{color:#ae3633}.down-key{color:#246991}
+ .launch-card header .pwa-tools{margin-left:16px}.launch-card .launch-choices{grid-column:1;grid-row:3;display:grid;grid-template-columns:1fr 1fr;gap:10px}
+ .launch-choices button{min-height:84px;text-align:center;border-radius:10px;border-bottom-width:3px;background:#eaf1ed}.launch-choices strong{font-size:23px}.launch-choices span{font-size:11px;margin-top:5px}
+ .launch-choices .home-print,.launch-choices .home-data{min-height:48px;padding:5px 10px;background:#f3efe4}.launch-choices .home-print strong,.launch-choices .home-data strong{font-size:16px}.launch-choices .home-print span,.launch-choices .home-data span{font-size:10px;margin-top:2px}
+ .launch-card .pwa-status{grid-row:2;font-size:10px;min-height:14px}.launch-card .launch-status{grid-row:4;min-height:12px;font-size:10px}.home-note{grid-row:5;font-size:10px;color:#858b87;margin:0;text-align:center}
+ .display-bar{height:32px;padding:0 96px 0 4px;gap:4px;background:#173b4c;border:0}
+ .display-bar button{min-height:30px;min-width:100px;padding:2px 8px;border:1px solid #647f88;background:#284d5b;color:#c9d6d7;font-size:11px;border-radius:4px;white-space:nowrap}
+ .display-bar button.active{background:#dcece3;color:#184f3d;border-color:#a7c9b7}
+ #quickControls{position:absolute;right:2px;top:0;z-index:20;display:flex;gap:3px;background:#173b4c;height:32px}
+ #quickControls .side-button{display:flex;flex-direction:row;gap:3px;align-items:center;justify-content:center;width:43px;height:32px;min-height:32px;padding:1px;color:#fff;background:#244d5d;border:1px solid #577883;border-radius:4px;font-size:9px}
+ #quickControls .side-icon{font-size:15px;line-height:1}#quickControls .active{background:#52734e}
+ body .route-overview{top:32px}body .distance-ruler{top:36px}body #railViewport{top:57px}body .speed-overlay-tools{top:82px}
+ body #routeWorkspace,body.fallback-landscape #routeWorkspace,body.asset-strip-open #routeWorkspace{--plan-height:calc((100% - 57px) * .3)}
+ #accessSvg{position:absolute;top:57px;left:0;width:100%;height:20px;z-index:7;pointer-events:none;background:linear-gradient(#fcfcfae6,#fcfcfa00)}#accessSvg .clickable{pointer-events:all;cursor:pointer}
+ #railSvg .balise-passive{fill:#8254a0;stroke:#593273;stroke-width:1.1}
+ .display-settings-note{font-size:11px;color:#556a63;line-height:1.5;margin:7px 0}.layer-choice[data-layer=signals],.layer-choice[data-layer=exits]{display:none}
+ body.list-mode #quickControls{background:#173b4c}body.list-mode .asset-toolbar{padding-right:52px}
+ .auto-scroll-panel{right:4px;bottom:4px}
+}
+@media screen and (orientation:landscape) and (max-height:380px){.launch-card{padding:8px 12px;gap:4px}.launch-choices button{min-height:66px}.launch-card header{padding-bottom:4px}.launch-choices .home-print,.launch-choices .home-data{min-height:44px}.launch-card .launch-choices{gap:7px}.home-app-icon{width:36px;height:36px}}
+@media screen and (orientation:portrait) and (pointer:coarse){.launch-card{width:calc(100vh - 24px);max-height:calc(100vw - 16px)}.launch-choices button{min-height:66px}.launch-card{padding:8px 12px;gap:4px}.launch-card .launch-choices{gap:7px}.launch-card header{padding-bottom:4px}}
+@media screen and (max-width:700px) and (orientation:landscape){.launch-card h1{font-size:20px}.launch-card h1 span{font-size:11px}.home-summary{font-size:10px}.launch-card header{gap:8px}.launch-card header .pwa-tools{margin-left:4px}.display-bar button{min-width:0;padding:2px 5px}}
+@media print{#quickControls,#accessSvg,.home-note{display:none!important}}

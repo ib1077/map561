@@ -9,10 +9,10 @@ window.installAutoScroll=function(api){
  const $=s=>document.querySelector(s),button=$('#autoScrollBtn');
  $('#routeWorkspace').insertAdjacentHTML('beforeend',`<section id="autoScrollPanel" class="auto-scroll-panel hidden" aria-label="オートスクロール"><button id="autoPlay" aria-pressed="false">▶ 開始</button><select id="autoDirection" aria-label="進む方向"><option value="1">下り → 智頭</option><option value="-1">上り → 上郡</option></select><select id="autoRate" aria-label="流れる速さ"><option value="12">ゆっくり</option><option value="24">ふつう</option><option value="48">速め</option></select><button id="autoClose" aria-label="オートスクロールを閉じる">×</button><span id="autoStatus" role="status">図に触れると停止</span></section>`);
  const panel=$('#autoScrollPanel');
- function sync(){const on=motion.isRunning();button.classList.toggle('active',on);button.querySelector('.side-icon').textContent=on?'Ⅱ':'▶';$('#autoPlay').textContent=on?'Ⅱ 停止':'▶ 開始';$('#autoPlay').setAttribute('aria-pressed',String(on));}
+ function sync(){const on=motion.isRunning();button.classList.toggle('active',on);button.querySelector('.side-icon').textContent=on?'Ⅱ':'▶';button.lastElementChild.textContent=on?'停止':'再生';button.setAttribute('aria-label',on?'オートスクロールを停止':'オートスクロールを再生');$('#autoPlay').textContent=on?'Ⅱ 停止':'▶ 開始';$('#autoPlay').setAttribute('aria-pressed',String(on));}
  const motion=window.createAutoPan({target:api.target,changed:api.changed,stopped:()=>{sync();api.save();$('#autoStatus').textContent='停止中・開始で再開';}});
  function close(){motion.stop();panel.classList.add('hidden');button.setAttribute('aria-expanded','false');}
- button.onclick=()=>{if(motion.isRunning()){motion.stop();return;}const open=panel.classList.contains('hidden');panel.classList.toggle('hidden',!open);button.setAttribute('aria-expanded',String(open));if(open)api.prepare();};
+ button.onclick=()=>{if(motion.isRunning()){motion.stop();return;}panel.classList.remove('hidden');button.setAttribute('aria-expanded','true');$('#autoPlay').click();};
  $('#autoPlay').onclick=()=>{if(motion.isRunning()){motion.stop();return;}api.prepare();if(!motion.start(Number($('#autoDirection').value),Number($('#autoRate').value)))$('#autoStatus').textContent='この方向の端です。方向変更・拡大で移動できます';else $('#autoStatus').textContent='図に触れると停止';sync();};
  for(const id of ['autoDirection','autoRate'])$('#'+id).onchange=()=>{const resume=motion.isRunning();motion.stop();if(resume)$('#autoPlay').click();};
  $('#autoClose').onclick=close;
