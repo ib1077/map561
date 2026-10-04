@@ -16,7 +16,7 @@
 <body class="launch-waiting">
   <section id="launchScreen" class="launch-screen" aria-labelledby="launchTitle">
     <div class="launch-card">
-      <header><img class="home-app-icon" src="icon.svg" alt=""><h1 id="launchTitle">路線図<span>（構造物・速度）</span></h1><div class="home-summary">拡大・移動できます<br><span class="up-key">のぼり 赤</span> ／ <span class="down-key">くだり 青</span>で表示</div><div class="pwa-tools"><span id="appVersion">Ver.13.17A</span><button id="pwaUpdate" type="button">更新して再起動</button></div></header>
+      <header><img class="home-app-icon" src="icon.svg" alt=""><h1 id="launchTitle">路線図<span>（構造物・速度）</span></h1><div class="home-summary">拡大・移動できます<br><span class="up-key">のぼり 赤</span> ／ <span class="down-key">くだり 青</span>で表示</div><div class="pwa-tools"><span id="appVersion">Ver.13.18A</span><button id="pwaUpdate" type="button">更新して再起動</button></div></header>
       <p id="pwaStatus" class="pwa-status" role="status" aria-live="polite"></p>
       <div class="launch-choices">
         <button data-launch-mode="route"><strong>路線図</strong><span>勾配・構造物を表示</span></button>
@@ -43,7 +43,7 @@
 <nav id="quickControls" aria-label="HOMEと再生"><button id="homeBtn" class="side-button" aria-label="HOMEへ戻る"><span class="side-icon" aria-hidden="true">⌂</span><span>HOME</span></button><button id="autoScrollBtn" class="side-button" aria-expanded="false" aria-label="オートスクロール"><span class="side-icon" aria-hidden="true">▶</span><span>再生</span></button></nav>
 
       <section id="routeWorkspace" class="workspace" aria-label="路線図">
-        <div class="display-bar" role="group" aria-label="路線図の表示切替"><button id="equipmentToggle" type="button">地上子 OFF</button><button id="labelToggle" type="button">信号名 ON</button><button id="baliseLabelToggle" type="button">地上子名 ON</button></div><svg id="accessSvg" aria-label="進入路"></svg>
+        <div class="display-bar" role="group" aria-label="路線図の表示切替"><button id="equipmentToggle" type="button">地上子 OFF</button><button id="labelToggle" type="button">信号名 ON</button><span id="scaleReadout" aria-live="off"></span></div><svg id="accessSvg" aria-label="進入路"></svg>
         <div class="route-overview" role="img" aria-label="全線56.1kmの表示範囲"><span id="viewWindow"></span></div>
         <div id="distanceRuler" class="distance-ruler" aria-hidden="true"></div>
         <div class="status-pills"><button id="fitBtn" class="status-button">全体</button><span>1本指で縦横移動</span></div>
@@ -89,7 +89,7 @@
         </div>
         <div id="assetTableWrap" class="asset-table-wrap">
           <table class="asset-table">
-            <thead><tr><th>距離</th><th title="全データの距離順番号">距離順No.</th><th title="元資料の種別順番号">元種別No.</th><th>カテゴリ</th><th>種別1</th><th>種別2</th><th>種別3</th></tr></thead>
+            <colgroup><col style="width:17%"><col style="width:7%"><col style="width:7%"><col style="width:6%"><col style="width:21%"><col style="width:21%"><col style="width:21%"></colgroup><thead><tr><th>距離</th><th title="全データの距離順番号">距順<br>No.</th><th title="元資料の種別順番号">元種別<br>No.</th><th title="カテゴリ">分類</th><th>種別1</th><th>種別2</th><th>種別3</th></tr></thead>
             <tbody id="assetRows"></tbody>
           </table>
           <details class="asset-history"><summary>移設履歴（7件）／※の行を選ぶと履歴を表示</summary><ol id="assetHistoryRows"></ol></details>
@@ -150,7 +150,7 @@
     <div class="settings-layer">
     <aside id="settings" class="settings" aria-label="表示設定" aria-hidden="true">
       <div class="settings-head"><div><strong>表示設定</strong><span>駅・トンネル・勾配は常に表示</span></div><button id="menuClose" class="icon-button dark" aria-label="設定を閉じる">×</button></div>
-      <button id="displayAuto" type="button" class="reset-button">縮尺に応じた自動表示へ</button><p class="display-settings-note">信号・進入路・駅・トンネル・勾配は常時表示。地上子と名称は上のバーで切り替えます。</p><div id="layerSettings" class="layer-settings"></div>
+      <fieldset class="info-font-controls"><legend>情報文字サイズ</legend><button data-info-size="small" type="button">小</button><button data-info-size="normal" type="button">標準</button><button data-info-size="large" type="button">大</button></fieldset><button id="displayAuto" type="button" class="reset-button">縮尺に応じた自動表示へ</button><p class="display-settings-note">信号・進入路・駅・トンネル・勾配は常時表示。地上子と名称は上のバーで切り替えます。</p><div id="layerSettings" class="layer-settings"></div>
       <button id="resetLayers" class="reset-button">すべて自動に戻す</button>
     </aside>
     <button id="scrim" class="scrim hidden" aria-label="設定を閉じる"></button>

@@ -1,7 +1,7 @@
 (() => {
   'use strict';
   const rows=window.ASSET_ROWS||[], $=s=>document.querySelector(s);
-  const groups=[['2','駅'],['6','距離標（kp）'],['3','トンネル'],['8','上り信号機'],['9','下り信号機'],['10','上り地上子'],['11','下り地上子'],['12','無電源地上子'],['7','曲線'],['5','避難口']];
+  const groups=[['1','勾配'],['2','駅'],['6','距離標（kp）'],['3','トンネル'],['8','上り信号機'],['9','下り信号機'],['10','上り地上子'],['11','下り地上子'],['12','無電源地上子'],['7','曲線'],['5','避難口']];
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const km=n=>{const m=Math.round(Math.abs(n)*1000);return `${n<0?'−':''}${String(Math.floor(m/1000)).padStart(2,'0')}k${String(m%1000).padStart(3,'0')}m`;};
   const dialog=document.createElement('section');dialog.id='listPrintDialog';dialog.hidden=true;
@@ -18,7 +18,7 @@
   function render(){
     const from=Number($('#lpFrom').value),to=Number($('#lpTo').value),section=$('#lpRange').value==='section',chosen=new Set([...dialog.querySelectorAll('.lp-types input:checked')].map(x=>Number(x.value)));
     if(section&&(!Number.isFinite(from)||!Number.isFinite(to)||from>to)){$('#lpStatus').textContent='開始・終了の距離を確認してください。';return false;}
-    const selected=rows.filter(r=>Number(r.categoryCode)!==1&&r.type1!=="T勾配"&&chosen.has(Number(r.categoryCode))&&(!section||(r.distanceKm>=from&&r.distanceKm<=to)));
+    const selected=rows.filter(r=>!(Number(r.categoryCode)===3&&r.type1==="T勾配")&&chosen.has(Number(r.categoryCode))&&(!section||(r.distanceKm>=from&&r.distanceKm<=to)));
     const category=$('#lpOrder').value==='category',rank=new Map(groups.map(([c],i)=>[Number(c),i]));
     selected.sort((a,b)=>(category?(rank.get(Number(a.categoryCode))??99)-(rank.get(Number(b.categoryCode))??99):0)||(category&&Number(a.categoryCode)===12&&Number(b.categoryCode)===12?String(a.type2??"").localeCompare(String(b.type2??""),"ja",{numeric:true}):0)||a.distanceKm-b.distanceKm||a.distanceOrder-b.distanceOrder);
     const pages=$('#lpPages');pages.innerHTML='';count=selected.length;
