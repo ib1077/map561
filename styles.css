@@ -344,3 +344,27 @@ body.list-mode .side-controls>:not(#homeBtn){display:none!important}
  body.fallback-landscape #scaleReadout,body.asset-strip-open #scaleReadout{bottom:calc(var(--plan-height) + 4px)}
 }
 @media screen and (orientation:landscape) and (max-height:700px){#scaleReadout{bottom:calc(var(--plan-height) + 4px)}}
+
+/* Ver.13.20A: screen layout only. Keep data coordinates and print geometry. */
+@media screen{
+ body #routeWorkspace,body.fallback-landscape #routeWorkspace,body.asset-strip-open #routeWorkspace{--plan-height:calc((100% - 25px) * .38)}
+ body .topbar .side-controls{gap:4px}
+ body .topbar .side-button,body .topbar #fullscreenBtn{height:38px;min-height:38px;margin:0}
+ .side-display-group{display:flex;flex-direction:column;gap:4px;margin-top:7px;padding-top:6px;border-top:1px solid #88a5aa;flex:none}
+ body .topbar .side-display-group .side-toggle{height:36px;min-height:36px;border-radius:7px;background:#244d5d;color:#e5edeb;border:1px solid #74939a;box-shadow:none}
+ body .topbar .side-display-group .side-toggle.active{background:#dcece3;border-color:#63af8d;color:#184f3d}
+ .speed-time-button{min-height:32px;border:1px solid #91a5ab;border-radius:5px;background:#eef3ee;color:#173b4c;font-size:12px;padding:3px 7px}
+ .speed-time-button.active{background:#dcece3;border-color:#39785e}
+ body .speed-overlay-tools{right:5px;max-width:calc(100% - 10px);flex-wrap:wrap}
+}
+@media screen and (max-height:320px) and (orientation:landscape){
+ body .topbar .side-controls{gap:2px}
+ body .topbar .side-button,body .topbar #fullscreenBtn{height:32px;min-height:32px}
+ body .topbar .side-display-group .side-toggle{height:33px;min-height:33px}
+ .side-display-group{margin-top:4px;padding-top:4px;gap:3px}
+}
+@media screen{
+ body .topbar .side-button{gap:0;line-height:12px}
+ body .topbar .side-icon{font-size:17px;line-height:18px;height:18px}
+}
+@media screen and (max-height:320px) and (orientation:landscape){body .topbar .side-icon{font-size:14px;line-height:14px;height:14px}}
