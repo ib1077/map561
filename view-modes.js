@@ -18,14 +18,34 @@ window.installViewModes=function(api){
   Object.assign(choice,entries[entry]||entries.gradient);sync();
  }
  const nav=$('#viewOverview');let tap=null,frame=0;
- nav.setAttribute('role','button');nav.tabIndex=0;nav.title='枠をドラッグして移動／枠の外はタップで移動';
+ nav.setAttribute('role','button');nav.tabIndex=0;nav.title='オレンジ枠を左右へドラッグして移動';
  const clamp=km=>Math.max(0,Math.min(api.total,km));
  function flush(commit=false){if(frame){cancelAnimationFrame(frame);frame=0;}if(tap?.dragged&&Number.isFinite(tap.target))api.navigate(tap.target,commit);}
- nav.addEventListener('pointerdown',e=>{if(tap){tap.cancelled=true;return;}const p=api.pointer(e,nav),g=api.geometry(),start=Number(nav.dataset.start),end=Number(nav.dataset.end),width=nav.clientWidth,x1=8+(Math.max(0,g.left)-start)/(end-start)*(width-16),x2=8+(Math.min(api.total,g.right)-start)/(end-start)*(width-16);tap={id:e.pointerId,x:p.x,y:p.y,start,end,width,center:(g.left+g.right)/2,onFrame:p.x>=x1-6&&p.x<=x2+6};nav.setPointerCapture?.(e.pointerId);});
- nav.addEventListener('pointermove',e=>{if(!tap||e.pointerId!==tap.id||tap.cancelled)return;const p=api.pointer(e,nav),dx=p.x-tap.x;if(Math.hypot(dx,p.y-tap.y)>4){if(!tap.onFrame){tap.cancelled=true;return;}tap.dragged=true;tap.target=clamp(tap.center+dx/Math.max(1,tap.width-16)*(tap.end-tap.start));if(!frame)frame=requestAnimationFrame(()=>{frame=0;flush(false);});}});
- nav.addEventListener('pointerup',e=>{if(!tap||tap.id!==e.pointerId)return;const t=tap;if(!t.cancelled&&t.dragged){const p=api.pointer(e,nav);t.target=clamp(t.center+(p.x-t.x)/Math.max(1,t.width-16)*(t.end-t.start));flush(true);}tap=null;if(frame){cancelAnimationFrame(frame);frame=0;}if(!t.cancelled&&!t.dragged&&!t.onFrame)api.navigate(clamp(t.start+(t.x-8)/Math.max(1,t.width-16)*(t.end-t.start)));renderOverview();});
- for(const name of ['pointercancel','lostpointercapture'])nav.addEventListener(name,()=>{if(!tap)return;flush(true);tap=null;renderOverview();});
- nav.addEventListener('keydown',e=>{if(['Enter',' '].includes(e.key)){e.preventDefault();api.navigate((Number(nav.dataset.start)+Number(nav.dataset.end))/2);return;}if(!['ArrowLeft','ArrowRight'].includes(e.key))return;e.preventDefault();const g=api.geometry();api.navigate((g.left+g.right)/2+(e.key==='ArrowLeft'?-1:1)*(g.right-g.left));});
+ // Only the orange viewport frame is draggable; the overview itself never pans or zooms.
+ nav.addEventListener('pointerdown',e=>{
+  if(e.button!==0)return;
+  if(tap){finishDrag();return;}
+  const p=api.pointer(e,nav),g=api.geometry(),start=Number(nav.dataset.start),end=Number(nav.dataset.end),width=nav.clientWidth;
+  const x1=8+(Math.max(0,g.left)-start)/(end-start)*(width-16),x2=8+(Math.min(api.total,g.right)-start)/(end-start)*(width-16);
+  if(p.x<x1-12||p.x>x2+12)return;
+  e.preventDefault();
+  tap={id:e.pointerId,x:p.x,y:p.y,start,end,width,center:(g.left+g.right)/2,onFrame:true};
+  nav.classList.add('dragging');nav.setPointerCapture?.(e.pointerId);
+ });
+ nav.addEventListener('pointermove',e=>{
+  if(!tap||e.pointerId!==tap.id)return;
+  e.preventDefault();const p=api.pointer(e,nav),dx=p.x-tap.x;
+  if(tap.dragged||Math.abs(dx)>3){tap.dragged=true;tap.target=clamp(tap.center+dx/Math.max(1,tap.width-16)*(tap.end-tap.start));if(!frame)frame=requestAnimationFrame(()=>{frame=0;flush(false);});}
+ });
+ function finishDrag(e){
+  if(!tap||(e&&e.pointerId!==tap.id))return;
+  if(e?.type==='pointerup'&&tap.dragged){const p=api.pointer(e,nav);tap.target=clamp(tap.center+(p.x-tap.x)/Math.max(1,tap.width-16)*(tap.end-tap.start));}
+  const id=tap.id;flush(true);tap=null;nav.classList.remove('dragging');
+  if(nav.hasPointerCapture?.(id))nav.releasePointerCapture(id);
+  renderOverview();
+ }
+ for(const name of ['pointerup','pointercancel','lostpointercapture'])nav.addEventListener(name,finishDrag);
+ nav.addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight'].includes(e.key))return;e.preventDefault();const g=api.geometry();api.navigate((g.left+g.right)/2+(e.key==='ArrowLeft'?-1:1)*(g.right-g.left));});
  function renderOverview(){
   if(choice.layout!=='follow')return;
   const surface=$('#viewOverview'),canvas=$('#viewOverviewCanvas'),w=surface.clientWidth,h=surface.clientHeight;if(!w||!h)return;
@@ -45,7 +65,7 @@ window.installViewModes=function(api){
   const occupied=[-100,-100];ctx.font='10px sans-serif';
   for(const s of visible){const xx=x(s.km),yy=y(s.km);ctx.fillStyle='#54846c';ctx.fillRect(xx-2,yy-4,4,8);const tw=ctx.measureText(s.name).width,lx=Math.max(4,Math.min(w-tw-4,xx+4));let row=occupied[0]+7<lx?0:occupied[1]+7<lx?1:-1;if(row<0)continue;occupied[row]=lx+tw;ctx.fillStyle='#314f47';ctx.fillText(s.name,lx,29+row*12);}
   const a=Math.max(start,Math.max(0,g.left)),b=Math.min(end,Math.min(api.total,g.right)),xx=x(a),ww=Math.max(1,x(b)-xx);ctx.fillStyle='#d8992820';ctx.fillRect(xx,19,ww,h-21);ctx.strokeStyle='#b47b26';ctx.lineWidth=1.5;ctx.strokeRect(xx,19,ww,h-21);
-  $('#overviewCaption').textContent=`周辺の${names[choice.aux]}　${start.toFixed(1)}–${end.toFixed(1)}km ／ 枠をドラッグ・枠外タップで移動`;
+  $('#overviewCaption').textContent=`周辺の${names[choice.aux]}　${start.toFixed(1)}–${end.toFixed(1)}km ／ オレンジ枠を左右へドラッグ`;
   surface.setAttribute('aria-label',`周辺の${names[choice.aux]} ${start.toFixed(2)}から${end.toFixed(2)}km。メイン ${a.toFixed(2)}から${b.toFixed(2)}km`);
   surface.dataset.start=String(start);surface.dataset.end=String(end);surface.dataset.mainStart=String(a);surface.dataset.mainEnd=String(b);
  }
