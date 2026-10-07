@@ -9,7 +9,7 @@
  function layout(){requestAnimationFrame(()=>requestAnimationFrame(()=>window.dispatchEvent(new Event('resize'))));}
  button.addEventListener('click',async()=>{
    if(busy)return;
-   if(!document.fullscreenElement&&launchFullscreen.matches){say('PWA起動時の全画面表示です。この起動方式はアプリの全画面解除の対象外です。通常起動へ戻す場合は通常版を使用してください。');return;}
+   if(!document.fullscreenElement&&launchFullscreen.matches){say('PWA起動時の全画面表示です。この起動方式は手動の全画面解除の対象外です。');return;}
    if(!document.fullscreenElement&&!supported()){say('この環境では全画面表示を利用できません。通常表示で使用できます。');return;}
    busy=true;
    try{

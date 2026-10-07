@@ -85,7 +85,7 @@
   function autoVisible(layer){if(["stations","tunnels"].includes(layer))return true;if(["gradient","curves"].includes(layer))return state.zoom>=24;if(["signals","points","exits"].includes(layer))return state.zoom>=68;if(layer==="balises")return state.zoom>=110;return false;}
   function baseVisible(layer){if(["stations","tunnels","gradient"].includes(layer))return true;const value=state.layers[layer]||"auto";return value==="show"||(value==="auto"&&autoVisible(layer));}
   // Screen-only overrides. Print builders use the original layer rules.
-  const displayState={mode:"manual",balises:false,signalLabels:true,baliseLabels:true};
+  const displayState={mode:"manual",balises:false,signalLabels:false,baliseLabels:true};
   function visible(layer){
     if(["stations","tunnels","gradient","signals","exits"].includes(layer))return true;
     if(layer==="balises"&&displayState.mode==="manual")return displayState.balises;
@@ -382,16 +382,17 @@
     await waitForLayout(260);
   }
   function goHome(){autoScroll?.close();speedEditor?.close();routeMotion.reset();save();printFromHome=false;openPrintDialog(false);openSettings(false);setTimePanel(false);closeInfo();const home=$("#launchScreen");home.classList.remove("hidden","closed","turning");document.body.classList.add("launch-waiting");$$('[data-launch-mode]').forEach(b=>b.disabled=false);$("#launchStatus").textContent="表示する画面を選んでください";}
-  async function launchApp(mode){
+  async function launchApp(mode,entry=null){
     const home=$("#launchScreen"),status=$("#launchStatus");if(home.classList.contains("turning"))return;
     home.classList.add("turning");status.textContent="画面を開いています…";$$('[data-launch-mode]').forEach(b=>b.disabled=true);
+    if(mode==="route"){Object.assign(displayState,{mode:"manual",balises:false,signalLabels:false});viewModes?.selectEntry(entry);}
     await prepareLandscapeForLaunch();
     const initialEntry=!hasEntered;
     if(!hasEntered){state.zoom=72;state.centerKm=0;state.routeYRatio=.55;}
     const target=mode==='print'?(state.mode==='list'?'route':state.mode):mode;
     const km=state.centerKm;setMode(target,km);hasEntered=true;
     document.body.classList.remove("launch-waiting");home.classList.add("closed");home.classList.remove("turning");$$('[data-launch-mode]').forEach(b=>b.disabled=false);
-    requestAnimationFrame(()=>{renderRoute();if(target!=='list'){scrollCenter(km,true);if(initialEntry)positionRouteStart();else restoreRouteY();}save();});
+    requestAnimationFrame(()=>{renderRoute();if(target!=='list'){scrollCenter(km,true);if(initialEntry)positionRouteStart();else positionViewGradient();}save();});
     setTimeout(()=>{if(home.classList.contains('closed'))home.classList.add('hidden');},220);
     if(mode==='print'){printFromHome=true;openPrintDialog(true);}
   }
@@ -425,7 +426,7 @@
 
   assetStrip.addEventListener("wheel",e=>{if(!viewModes?.isPlanMain())return;e.preventDefault();routeMotion.reset();if(e.ctrlKey)setZoom(state.zoom*(e.deltaY>0?.88:1.14),center());else routeViewport.scrollLeft+=e.deltaX||e.deltaY;queueStripRender();},{passive:false});
   setAssetStripOpen(state.assetStripOpen,false);buildSettings();
-  $$('[data-launch-mode]').forEach(button=>button.addEventListener("click",()=>launchApp(button.dataset.launchMode)));
+  $$('[data-launch-mode]').forEach(button=>button.addEventListener("click",()=>launchApp(button.dataset.launchMode,button.dataset.routeEntry)));
   $("#equipmentToggle").addEventListener("click",()=>setDisplayOption("balises"));
   $("#labelToggle").addEventListener("click",()=>setDisplayOption("signalLabels"));
   $("#displayAuto").addEventListener("click",()=>{displayState.mode="auto";renderRoute();});
@@ -466,7 +467,7 @@
     openSettings:()=>openSettings(true),closeSettings:()=>openSettings(false)
   });
   function positionViewGradient(){
-    if(viewModes.isPlanMain())return;
+    if(viewModes.isPlanMain()&&document.body.dataset.viewLayout!=="reverse")return;
     const h=Number(routeSvg.getAttribute("height")),top=parseFloat(routeSvg.style.top)||0;
     routeViewport.scrollTop=Math.max(0,Math.min(routeViewport.scrollHeight-routeViewport.clientHeight,top+routeY(interpolateY(center()),h)-routeViewport.clientHeight*.64));
   }

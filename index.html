@@ -16,13 +16,9 @@
 <body class="launch-waiting">
   <section id="launchScreen" class="launch-screen" aria-labelledby="launchTitle">
     <div class="launch-card">
-      <header><img class="home-app-icon" src="icon.svg" alt=""><h1 id="launchTitle">路線図<span>（構造物・速度）</span></h1><div class="home-summary">拡大・移動できます<br><span class="up-key">のぼり 赤</span> ／ <span class="down-key">くだり 青</span>で表示</div><div class="pwa-tools"><span id="appVersion">Ver.13.21A-F</span><button id="pwaUpdate" type="button">更新して再起動</button></div></header>
+      <header><img class="home-app-icon" src="icon.svg" alt=""><h1 id="launchTitle">路線図<span>（構造物・速度）</span></h1><div class="home-summary">拡大・移動できます<br><span class="up-key">のぼり 赤</span> ／ <span class="down-key">くだり 青</span>で表示</div><div class="pwa-tools"><span id="appVersion">Ver.13.22A</span><button id="pwaUpdate" type="button">更新して再起動</button><button id="fullscreenBtn" class="side-button" type="button" aria-pressed="false">全画面</button><span id="fullscreenStatus" role="status" aria-live="polite"></span></div></header>
       <p id="pwaStatus" class="pwa-status" role="status" aria-live="polite"></p>
-      <div class="launch-choices">
-        <button data-launch-mode="route"><strong>路線図</strong><span>勾配・構造物を表示</span></button>
-        <button data-launch-mode="list"><strong>構造物一覧</strong><span>距離順の表から探す</span></button>
-        <button data-launch-mode="print" class="home-print"><strong>印刷</strong><span>路線図・構造物一覧を印刷／PDF保存</span></button>
-      </div>
+      <div class="home-entrances"><section class="home-route-section" aria-label="路線図を見る"><h2>路線図を見る</h2><div class="home-routes"><button type="button" data-launch-mode="route" data-route-entry="gradient"><svg viewBox="0 0 164 65" aria-hidden="true"><rect x="2" y="0" width="158" height="44" rx="3" fill="#f9fcf5"/><path d="M8 32.56L45 25.08L78 29.92L110 11.88L154 16.72" fill="none" stroke="#347581" stroke-width="2.5"/><path d="M47 3V41M111 3V41" stroke="#acccb3" stroke-width="3"/><rect x="2" y="47" width="158" height="17" rx="3" fill="#f9fcf5"/><path d="M8 59.58L45 56.69L78 58.56L110 51.59L154 53.46" fill="none" stroke="#347581" stroke-width="2.5"/><path d="M47 50V61M111 50V61" stroke="#acccb3" stroke-width="3"/><rect x="57" y="48" width="39" height="15" fill="#d59c2922" stroke="#ae802b"/></svg><strong>勾配図</strong><small>広域ナビ付き</small></button><button type="button" data-launch-mode="route" data-route-entry="plan"><svg viewBox="0 0 164 65" aria-hidden="true"><rect x="2" y="0" width="158" height="44" rx="3" fill="#f9fcf5"/><path d="M8 25.08H154" fill="none" stroke="#347581" stroke-width="2.5"/><path d="M47 3V41M111 3V41" stroke="#acccb3" stroke-width="3"/><rect x="2" y="47" width="158" height="17" rx="3" fill="#f9fcf5"/><path d="M8 56.69H154" fill="none" stroke="#347581" stroke-width="2.5"/><path d="M47 50V61M111 50V61" stroke="#acccb3" stroke-width="3"/><rect x="57" y="48" width="39" height="15" fill="#d59c2922" stroke="#ae802b"/></svg><strong>位置図</strong><small>広域ナビ付き</small></button><button type="button" data-launch-mode="route" data-route-entry="gradient-plan"><svg viewBox="0 0 164 65" aria-hidden="true"><rect x="2" y="0" width="158" height="44" rx="3" fill="#f9fcf5"/><path d="M8 32.56L45 25.08L78 29.92L110 11.88L154 16.72" fill="none" stroke="#347581" stroke-width="2.5"/><path d="M47 3V41M111 3V41" stroke="#acccb3" stroke-width="3"/><rect x="2" y="47" width="158" height="17" rx="3" fill="#f9fcf5"/><path d="M8 56.69H154" fill="none" stroke="#347581" stroke-width="2.5"/><path d="M47 50V61M111 50V61" stroke="#acccb3" stroke-width="3"/></svg><strong>勾配図／位置図</strong><small>上下・同じ縮尺</small></button><button type="button" data-launch-mode="route" data-route-entry="plan-gradient"><svg viewBox="0 0 164 65" aria-hidden="true"><rect x="2" y="0" width="158" height="44" rx="3" fill="#f9fcf5"/><path d="M8 25.08H154" fill="none" stroke="#347581" stroke-width="2.5"/><path d="M47 3V41M111 3V41" stroke="#acccb3" stroke-width="3"/><rect x="2" y="47" width="158" height="17" rx="3" fill="#f9fcf5"/><path d="M8 59.58L45 56.69L78 58.56L110 51.59L154 53.46" fill="none" stroke="#347581" stroke-width="2.5"/><path d="M47 50V61M111 50V61" stroke="#acccb3" stroke-width="3"/></svg><strong>位置図／勾配図</strong><small>上下・同じ縮尺</small></button></div></section><nav class="launch-choices" aria-label="一覧・管理"><button data-launch-mode="list"><strong>構造物一覧</strong></button><button data-launch-mode="print" class="home-print"><strong>印刷</strong></button></nav></div>
 
       <p id="launchStatus" class="launch-status">画面を選ぶとそのまま開きます</p><p class="home-note">※距離は1m単位表示／位置は目安です</p>
     </div>
@@ -32,11 +28,11 @@
       <div class="brand"><span class="brand-mark" aria-hidden="true"></span><strong>智頭線</strong><span id="modeTitle">路線図</span></div>
       <nav class="side-controls" aria-label="表示と操作">
 <button id="homeBtn" class="side-button" aria-label="HOMEへ戻る"><span class="side-icon" aria-hidden="true">⌂</span><span>HOME</span></button>
-<button class="side-button mode-tab" data-mode="speed"><span class="side-icon" aria-hidden="true">📉</span><span>速度</span></button>
-<button id="fullscreenBtn" class="side-button" type="button" aria-pressed="false">全画面</button>
+
+
 <button id="menuBtn" class="side-button side-settings" aria-label="表示設定を開く"><span class="side-icon" aria-hidden="true">☰</span><span>設定</span></button>
 <button id="autoScrollBtn" class="side-button" aria-expanded="false" aria-label="オートスクロール"><span class="side-icon" aria-hidden="true">▶</span><span>再生</span></button>
-<div class="side-display-group" role="group" aria-label="路線図の表示切替"><button id="labelToggle" class="side-button side-toggle" type="button">信号名 ON</button><button id="equipmentToggle" class="side-button side-toggle" type="button">地上子 OFF</button></div>
+<div class="side-display-group" role="group" aria-label="路線図の表示切替"><button class="side-button side-toggle mode-tab" data-mode="speed" aria-pressed="false">速度 OFF</button><button id="labelToggle" class="side-button side-toggle" type="button">信号名 OFF</button><button id="equipmentToggle" class="side-button side-toggle" type="button">地上子 OFF</button></div>
       </nav>
     </header>
 
@@ -44,7 +40,7 @@
 
 
       <section id="routeWorkspace" class="workspace" aria-label="路線図">
-        <div id="viewQuickControls"><button id="swapMainView" type="button">位置図へ</button><button id="chooseView" type="button">表示方法</button></div><div id="viewOverview" role="img" aria-label="周辺の補助図"><canvas id="viewOverviewCanvas"></canvas><span id="overviewCaption"></span></div><span id="scaleReadout" aria-live="off"></span><span id="fullscreenStatus" role="status" aria-live="polite"></span><svg id="accessSvg" aria-label="進入路"></svg>
+        <div id="viewOverview" role="img" aria-label="周辺の補助図"><canvas id="viewOverviewCanvas"></canvas><span id="overviewCaption"></span></div><span id="scaleReadout" aria-live="off"></span><svg id="accessSvg" aria-label="進入路"></svg>
         <div class="route-overview" role="img" aria-label="全線56.1kmの表示範囲"><span id="viewWindow"></span></div>
         <div id="distanceRuler" class="distance-ruler" aria-hidden="true"></div>
         <div class="status-pills"><button id="fitBtn" class="status-button">全体</button><span>1本指で縦横移動</span></div>
@@ -151,23 +147,7 @@
     <div class="settings-layer">
     <aside id="settings" class="settings" aria-label="表示設定" aria-hidden="true">
       <div class="settings-head"><div><strong>表示設定</strong><span>図の見方と情報表示</span></div><button id="menuClose" class="icon-button dark" aria-label="設定を閉じる">×</button></div>
-      <section id="viewChooser" aria-labelledby="viewChooserTitle">
- <h2 id="viewChooserTitle">表示方法を選ぶ <small>試作</small></h2>
- <div class="view-layout-options" role="group" aria-label="画面構成">
-  <button type="button" data-view-layout="single"><strong>1画面</strong><small>細部を大きく</small></button>
-  <button type="button" data-view-layout="follow"><strong>2画面・追従</strong><small>メイン＋周辺</small></button>
-  <button type="button" data-view-layout="legacy"><strong>従来の上下</strong><small>同じ縮尺で比較</small></button>
- </div>
- <div class="view-choice-content">
-  <div class="view-choice-inputs">
-   <fieldset id="mainViewChoices"><legend>大きく見る図</legend><button type="button" data-view-main="gradient">横から・勾配図</button><button type="button" data-view-main="plan">上から・位置図</button></fieldset>
-   <fieldset id="auxViewChoices"><legend>追従する補助図</legend><button type="button" data-view-aux="plan">上から・位置図</button><button type="button" data-view-aux="gradient">横から・勾配図</button></fieldset>
-   <p id="viewChoiceNote"></p>
-  </div>
-  <figure class="view-preview"><svg id="viewPreview" viewBox="0 0 300 180" role="img" aria-label="選択中の配置見本"></svg><figcaption id="viewPreviewCaption"></figcaption><button id="viewChooseDone" type="button">この表示で見る</button></figure>
- </div>
- <p id="viewSpeedNote" hidden>速度表示中はメインを勾配図にします。速度を閉じると選んだ図に戻ります。</p>
-</section>
+      
 <details class="view-detail-settings"><summary>情報文字サイズ・詳細表示設定</summary><fieldset class="info-font-controls"><legend>情報文字サイズ</legend><button data-info-size="small" type="button">小</button><button data-info-size="normal" type="button">標準</button><button data-info-size="large" type="button">大</button></fieldset><button id="displayAuto" type="button" class="reset-button">縮尺に応じた自動表示へ</button><p class="display-settings-note">信号・進入路・駅・トンネル・勾配は常時表示。地上子と信号名は左メニューで切り替えます。</p><div id="layerSettings" class="layer-settings"></div>
       <button id="resetLayers" class="reset-button">すべて自動に戻す</button></details>
     </aside>
