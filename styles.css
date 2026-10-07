@@ -428,9 +428,9 @@ body.list-mode .side-controls>:not(#homeBtn){display:none!important}
  .launch-card header{padding-bottom:3px}.launch-card header .pwa-tools{gap:2px}.pwa-tools #fullscreenBtn{min-height:25px;height:25px;font-size:10px;width:auto;box-shadow:none;margin:0;padding:2px 8px}
  .pwa-tools #fullscreenStatus{position:static;max-width:190px;padding:0;background:none;box-shadow:none;font-size:10px}
  body .topbar .side-toggle:disabled{opacity:.5;cursor:default}
- body[data-view-layout="reverse"] #railViewport{top:calc(25px + (100% - 25px) * .62);bottom:0;opacity:1!important;pointer-events:auto!important;border-top:1px solid #9f998b}
- body[data-view-layout="reverse"][data-view-main="plan"] #assetStrip{top:25px;bottom:var(--plan-height);height:auto;min-height:0;display:block;pointer-events:auto!important}
- body[data-view-layout="reverse"] #scaleReadout{bottom:calc(var(--plan-height) + 4px)}
+ 
+ 
+ 
 }
 @media screen and (orientation:landscape) and (max-height:360px){
  .launch-card{padding:6px 10px;gap:3px}.launch-card header{gap:7px}.home-routes{gap:5px}.home-routes button{min-height:65px;padding:4px 6px;column-gap:5px}.home-routes svg{height:48px}.home-routes strong{font-size:13px}.home-routes small{font-size:9px;margin-top:2px}.home-route-section h2{font-size:11px;margin-bottom:3px}
@@ -438,7 +438,7 @@ body.list-mode .side-controls>:not(#homeBtn){display:none!important}
  .launch-card .home-note{font-size:9px}.launch-card .pwa-status{min-height:0}
 }
 @media screen and (max-width:720px) and (orientation:landscape){.home-routes button{grid-template-columns:60px minmax(0,1fr)}.home-routes strong{font-size:12px}.launch-card .home-entrances{grid-template-columns:minmax(0,3fr) 115px}.home-summary{display:none}}
-@media screen{body[data-view-layout="reverse"][data-view-main="plan"] #assetStrip{bottom:var(--plan-height)!important}}
+@media screen{}
 @media screen and (orientation:landscape) and (max-height:360px){
  .launch-screen{padding:6px}
  .launch-card header .pwa-tools{display:grid;grid-template-columns:auto auto;gap:2px 4px;align-items:center}
@@ -446,3 +446,13 @@ body.list-mode .side-controls>:not(#homeBtn){display:none!important}
  .launch-screen:not(.turning) .launch-status{display:none}
 }
 @media screen and (orientation:landscape) and (max-height:320px){.launch-card{gap:2px}.home-routes button{min-height:59px}.home-routes svg{height:42px}}
+
+@media screen{
+ .home-routes{grid-template-columns:repeat(3,minmax(0,1fr))}
+ .home-routes button{grid-template-columns:1fr;grid-template-rows:auto auto auto;text-align:center;gap:3px;min-height:150px}
+ .home-routes svg{grid-row:auto;height:78px}.home-routes strong{white-space:normal;font-size:14px}.home-routes small{margin:0}
+ #routeGridBackdrop{position:absolute!important;top:0!important;left:0;pointer-events:none;min-height:0!important;max-height:none;background:#fcfcfa}
+ #viewOverview{cursor:crosshair}#viewOverview:focus-visible{outline:2px solid #b47b26;outline-offset:-2px}
+}
+@media screen and (orientation:landscape) and (max-height:360px){.home-routes button{min-height:118px;padding:5px}.home-routes svg{height:60px}.home-routes strong{font-size:12px}}
+@media screen{#routeGridBackdrop .rail-grid.half-km{stroke:#b5bdb8;stroke-width:1.3}}
